@@ -17,7 +17,7 @@ Travis Scott - Sicko Mode
 Ciara - Ride
 The Honeysticks - Out Like a Light
 DIIV - Out of Mind
-Aaron Watson - Kiss That Tirl Goodbye
+Aaron Watson - Kiss That Girl Goodbye
 ...
 ```
 ---
