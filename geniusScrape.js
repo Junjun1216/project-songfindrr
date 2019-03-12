@@ -1,6 +1,7 @@
 const path = require('path');
 const jquery = require('jquery');
 const Nightmare = require('nightmare');
+// set show to false to turn off browser
 const nightmare = Nightmare({show: true,
     webPreferences: {
         preload: path.resolve(__dirname, 'mypreload.js')
