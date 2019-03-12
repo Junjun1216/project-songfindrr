@@ -1,0 +1,1 @@
+export const FETCH_LYRICS = 'FETCH_LYRICS';
