@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import InputLabel from '@material-ui/core/InputLabel';
 import Input from '@material-ui/core/Input';
 import NativeSelect from '@material-ui/core/NativeSelect';
 import FormControl from '@material-ui/core/FormControl';
+import logo from '../assets/logo_transparent.png';
 
 
 
@@ -18,7 +18,7 @@ class MainPage extends Component {
             floatLabelStyle: { fontSize: '19px' },
             textFieldStyle: { width: '58%' },
             searchBtnStyle: { marginTop: '19px' },
-            paperSize: { height: '60%', width: '50%' },
+            paperSize: { height: '30%', width: '30%' },
             lyric: '',
             query: 'All'
         };
@@ -32,6 +32,10 @@ class MainPage extends Component {
         this.setState({ [query]: event.target.value})
     }
 
+    imageClick = () => {
+        console.log("click");
+    };
+
     search = () => {
 
         if (!this.state.lyric || !this.state.query) {
@@ -43,24 +47,30 @@ class MainPage extends Component {
         console.log(this.state.lyric);
         console.log(this.state.query);
 
+        const search = {
+            lyric: this.state.lyric,
+            query: this.state.query
+        }
+
+
+
     }
 
     componentDidMount(){
         console.log(123);
     }
+    
     render() {
-        const {
-            lyricSearchStyle,
-            paperStyle,
-            verticalCenter,
-        } = styles;
+        const { lyricSearchStyle } = styles;
 
         return (
-            <MuiThemeProvider>
-            <div style={lyricSearchStyle}>
 
-                <Paper style={Object.assign({}, this.state.paperSize, paperStyle )}>
-                    <div style={verticalCenter}>
+            <MuiThemeProvider>
+            
+                <div style={lyricSearchStyle}>
+                    <div>
+                        <img src={logo} className="App-logo" alt="logo" onClick={this.imageClick}/>
+                    </div>
                         <TextField 
                             id="standard-name"
                             label="Lyric"
@@ -73,7 +83,7 @@ class MainPage extends Component {
                             <InputLabel shrink htmlFor="query-native-label-placeholder">
                                 Query
                             </InputLabel>
-                            
+                                
                             <NativeSelect
                                 value={this.state.query}
                                 onChange={this.queryChange('query')}
@@ -89,11 +99,9 @@ class MainPage extends Component {
                         <Button variant="contained" color="primary" style={this.state.searchBtnStyle} onClick={() => this.search()}>
                         Search
                         </Button>
-                    </div>
-                </Paper>
 
-            </div>
-        </MuiThemeProvider>
+                </div>
+            </MuiThemeProvider>
         )
     }
 }
@@ -102,27 +110,12 @@ class MainPage extends Component {
 const styles = {
 
     lyricSearchStyle: {
-        width: '100vw',
-        height: '100vh',
-    },
-
-    paperStyle: {
-        position: 'fixed',
-        top: '50%',
-        left: '50%',
-        transform: 'translateX(-50%) translateY(-50%)',
-        textAlign: 'center'
+        width: '100vw'
     },
 
     searchBtnStyle: {
         marginTop: '10px',
     },
-
-    verticalCenter: {
-        position: 'relative',
-        top: '50%',
-        transform: 'translateY(-50%)'
-    }
 }
 
 export default MainPage;
