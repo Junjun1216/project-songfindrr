@@ -1,5 +1,5 @@
 "use strict";
-const path = require('path');
+// const path = require('path');
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
@@ -18,7 +18,7 @@ app.post('/api/lyrics/', function (req, res, next) {
     let queriedData = {};
     for (let x = 0; x < pages; ++x) {
         request('https://search.azlyrics.com/search.php?q=' + req.body.query + '&w=songs&p=' + (x+1), (err, res2, html) => {
-            if (!err && res.statusCode == 200) {
+            if (!err && res2.statusCode == 200) {
                 const $ = cheerio.load(html);
                 $('.visitedlyr').each((i, el) => {
                     const title = $(el).find('a').text();
@@ -29,16 +29,17 @@ app.post('/api/lyrics/', function (req, res, next) {
                 });
                 return res.json(queriedData);
             } else {
-                console.log(res.statusCode);
+                console.log(res2.statusCode);
                 res.statusCode(503).end('server unavailable');
             }
         });
     }
+
 });
 
 // curl -X GET http://localhost:3000/api/lyrics/KnifeSkinnyfromthe9
-app.get('/api/lyrics/:title', function(req, res, next) {
-    songLyrics.findOne({_id: req.params.title}, function (err, song) {
+app.get('/api/lyrics/:title/:author', function(req, res, next) {
+    songLyrics.findOne({title: req.params.title, author: req.params.author}, function (err, song) {
         if (!song) return res.status(404).end('title not found');
         request(song.link, (err, res, html) => {
             if (!err && res.statusCode == 200) {
