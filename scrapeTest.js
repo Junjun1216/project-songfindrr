@@ -25,10 +25,9 @@ app.post('/api/lyrics/', function (req, res, next) {
                 $('.visitedlyr').each((i, el) => {
                     const title = $(el).find('a').text();
                     const ref = $(el).find('a').attr('href');
-                    const author = $(el).find('b').text();
+                    const author = $(el).find('b').eq(1).text();
                     queriedData[author] = {author: author, title: title, link: ref};
                     songLyrics.insert({_id: author, title: title, link: ref});
-                    console.log(queriedData);
                 });
                 return res.json(queriedData);
             } else {
