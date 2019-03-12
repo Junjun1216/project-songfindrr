@@ -13,10 +13,12 @@ const nedb = require('nedb');
 const songLyrics = new nedb({ filename: 'db/song.db', autoload: true, timestampData: true});
 let pages = 1;
 
-//  curl -X POST -H "Content-Type: application/json" '{"query":"react"}' http://localhost:3000/api/lyrics/
+//  curl -X POST -H "Content-Type: application/json" -d '{"query":"react"}' http://localhost:3000/api/lyrics/
 app.post('/api/lyrics/', function (req, res, next) {
     let queriedData = {};
     for (let x = 0; x < pages; ++x) {
+        console.log(req.body.query);
+        console.log(x);
         request('https://search.azlyrics.com/search.php?q=' + req.body.query + '&w=songs&p=' + (x+1), (err, res2, html) => {
             if (!err && res2.statusCode == 200) {
                 const $ = cheerio.load(html);
@@ -26,6 +28,7 @@ app.post('/api/lyrics/', function (req, res, next) {
                     const author = $(el).find('b').text();
                     queriedData[author] = {author: author, title: title, link: ref};
                     songLyrics.insert({_id: author, title: title, link: ref});
+                    console.log(queriedData);
                 });
                 return res.json(queriedData);
             } else {
@@ -37,7 +40,7 @@ app.post('/api/lyrics/', function (req, res, next) {
 
 });
 
-// curl -X GET http://localhost:3000/api/lyrics/KnifeSkinnyfromthe9
+// curl -X GET http://localhost:3000/api/lyrics/React/ReactValora
 app.get('/api/lyrics/:title/:author', function(req, res, next) {
     songLyrics.findOne({title: req.params.title, author: req.params.author}, function (err, song) {
         if (!song) return res.status(404).end('title not found');
