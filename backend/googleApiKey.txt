@@ -1,0 +1,6 @@
+apikey = AIzaSyBwzcTxXjfbAMZGpXiyT7OiKx9_oKSaF-s
+engine id = 014928307931634836673:fw2xtr7plgi
+
+
+GET 'https://www.googleapis.com/customsearch/v1?key=AIzaSyBwzcTxXjfbAMZGpXiyT7OiKx9_oKSaF-s&cx=014928307931634836673:fw2xtr7plgi&q=Feeling%20like%20I%27m%20runnin%27%20away'
+GET 'https://www.googleapis.com/customsearch/v1?key=INSERT_YOUR_API_KEY&cx=017576662512468239146:omuauf_lfve&q=lectures'
