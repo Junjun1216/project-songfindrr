@@ -58,7 +58,7 @@ const Results = ({results}) => {
                         {results.map(row => (
                             <TableRow key={row.link}>
                             <CustomTableCell component="th" scope="row">
-                                {row._id}
+                                {row.author}
                             </CustomTableCell>
                             <CustomTableCell align="right">{row.title}</CustomTableCell>
                             <CustomTableCell align="right">{row.lyrics}</CustomTableCell>

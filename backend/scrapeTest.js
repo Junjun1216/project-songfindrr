@@ -16,6 +16,24 @@ const nedb = require('nedb');
 const songLyrics = new nedb({ filename: 'db/song.db', autoload: true, timestampData: true});
 let pages = 1;
 
+
+// elasticsearch component
+let elasticsearch = require('elasticsearch');
+let Client = new elasticsearch.Client({
+    host: 'localhost:9200'
+});
+
+// ping the client
+Client.ping({
+    requestTimeout: 10000}, function(err) {
+    if (err) {
+        console.error('elasticsearch cluster is down!');
+    }
+    else {
+        console.log('all is well');
+    }
+});
+
 function scrapeAzSearch(url) {
     return new Promise(function (resolve, reject) {
         let queriedData = [];
@@ -26,7 +44,8 @@ function scrapeAzSearch(url) {
                     const title = $(el).find('a').text();
                     const ref = $(el).find('a').attr('href');
                     const author = $(el).find('b').eq(1).text();
-                    queriedData.push({_id: author, title: title, link: ref});
+                    // removed _id field
+                    queriedData.push({author: author, title: title, link: ref});
                 });
                 resolve(queriedData);
             } else {
@@ -54,6 +73,60 @@ function getLyric(link) {
     });
 }
 
+app.get('/api/lyrics/', function (req, res, next) {
+    console.log ('searching elasticsearch for ' + req.body.lyric);
+    Client.search({
+        index: 'songs',
+        type: '_doc',
+        body: /*{
+            "query": {
+                "query_string": {
+                    "default_field" : "lyrics",
+                    "query" : req.body.lyric
+                }
+
+            }
+        }*/
+        {
+            "query" : {
+                "bool": {
+                    "should": [{
+                        "bool" : {
+                             "must": [
+                             {
+                                 "match_phrase": { "lyrics": req.body.lyric }
+                             }
+
+                        ],
+                        // boost the _score if whole phrase matches
+                        "boost" : 3.0
+                    }
+                }, {
+                    "bool" : {
+                        "must" : [
+                            {
+                                "match": {"lyrics" : req.body.lyric}
+                            }
+                        ]
+                    }
+        	    }]
+            }
+        }
+
+    }
+    }, function(err, result) {
+        if (err) {
+            console.log(err);
+        }
+        else {
+            result.hits.hits.forEach(function(hit) {
+                console.log(hit);
+            });
+            res.end("done");
+        }
+    });
+});
+
 //  curl -X POST -H "Content-Type: application/json" -d '{"query":"react"}' http://localhost:3000/api/lyrics/
 app.post('/api/lyrics/', async function (req, res, next) {
     console.log('Searching Az for ' + req.body.query + ' for 1 page');
@@ -79,8 +152,50 @@ app.post('/api/lyrics/', async function (req, res, next) {
         console.log('fetching lyrics');
         for (let index in queriedData) {
             let lyrics = await getLyric(queriedData[index].link);
-            queriedData[index]['lyrics'] = lyrics.substring(0, 30);
-            songLyrics.insert(queriedData[index]);
+            queriedData[index]['lyrics'] = lyrics;
+            // this is where we insert the song into db
+            // songLyrics.insert(queriedData[index]);
+            Client.search({
+                index: 'songs',
+                type: '_doc',
+                body: {
+                    "query": {
+                        "bool": {
+                            "must": [
+                            {
+                                "match": { author: queriedData[index]['author'] }
+                            },
+                            {
+                                "match": { title: queriedData[index]['title'] }
+                            }
+
+                        ]
+                    }
+                }
+            }
+            }, function(err, result){
+                if (err || result.hits.hits.length == 0) {
+                    console.log('index does not exist');
+                    console.log(err);
+                    Client.index({
+                        index: "songs",
+                        type: "_doc",
+                        body: queriedData[index]
+                    }, function(err, result) {
+                        if (err) {
+                            console.log(err);
+                        }
+                        else {
+                            console.log(result);
+                        }
+                    });
+                }
+                else {
+                    console.log('index exists');
+                    //console.log(result);
+                }
+            });
+
             if (count == 5) break;
             ++count;
         }
@@ -89,12 +204,37 @@ app.post('/api/lyrics/', async function (req, res, next) {
     }
 });
 
+// gets the rest of the lyrics into the db as well
 app.post('/api/lyrics/', async function (req, res, next) {
     let data = req.body.data;
     for (let index in data) {
         let lyrics = await getLyric(data[index].link);
         data[index]['lyrics'] = lyrics;
-        songLyrics.insert(data[index]);
+        // songLyrics.insert(data[index]);
+        // replace with elasticsearch
+        Client.exists({
+            index: 'songs',
+            type: '_doc'
+        }, function(err, result){
+            if (err) {
+                console.log('index does not exist');
+            }
+            else {
+                console.log('index exists');
+            }
+        })
+        /*Client.index({
+            index: "songs",
+            type: "_doc",
+            body: queriedData[index]
+        }, function(err, result) {
+            if (err) {
+                console.log(err);
+            }
+            else {
+                console.log(result);
+            }
+        });*/
     };
 });
 
