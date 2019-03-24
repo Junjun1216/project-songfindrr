@@ -1,3 +1,4 @@
+// this is a custom nightmare preload file
 window.__nightmare = {};
 __nightmare.ipc = require('electron').ipcRenderer;
 __nightmare.sliced = require('sliced');
