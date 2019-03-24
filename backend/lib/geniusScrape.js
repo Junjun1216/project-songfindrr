@@ -7,7 +7,7 @@ const nightmare = Nightmare({
     show: false,
     // load custom preload file
     webPreferences: {
-        preload: path.resolve(__dirname, 'mypreload.js')
+        preload: path.resolve(__dirname, 'custPreload.js')
     }
 });
 
