@@ -1,7 +1,7 @@
 const request = require('request');
 const cheerio = require('cheerio');
 const nedb = require('nedb');
-const azLinks = new nedb({ filename: 'db/azlinks.db', autoload: true, timestampData: true});
+const azLinks = new nedb({ filename: '../db/azlinks.db', autoload: true, timestampData: true});
 let baseLinks = ['a.html', 'b.html', 'c.html', 'd.html', 'e.html', 'f.html', 'g.html', 'h.html',
                 'i.html', 'j.html', 'k.html', 'l.html', 'm.html', 'n.html', 'o.html', 'p.html',
                 'q.html', 'r.html', 's.html', 't.html', 'u.html', 'v.html', 'w.html', 'x.html',
