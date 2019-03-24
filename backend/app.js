@@ -1,10 +1,13 @@
 "use strict";
 // const path = require('path');
 const express = require('express');
+var cors = require('cors')
+
 const app = express();
 const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(cors())
 // app.use(express.static('frontend'));
 
 const request = require('request');
@@ -76,7 +79,7 @@ app.post('/api/lyrics/', async function (req, res, next) {
         console.log('fetching lyrics');
         for (let index in queriedData) {
             let lyrics = await getLyric(queriedData[index].link);
-            queriedData[index]['lyrics'] = lyrics;
+            queriedData[index]['lyrics'] = lyrics.substring(0, 30);
             songLyrics.insert(queriedData[index]);
             if (count == 5) break;
             ++count;
@@ -119,7 +122,7 @@ app.get('/api/lyrics/:title/:author', function(req, res, next) {
 });
 
 const http = require('http');
-const PORT = 3000;
+const PORT = 3001;
 
 http.createServer(app).listen(PORT, function (err) {
     if (err) console.log(err);
