@@ -14,6 +14,8 @@ let pages = 1;
 
 const cookie = require('cookie');
 
+const Promise = require('bluebird');
+
 const googleApi = require('./lib/googleApi');
 const geniusScrape = require('./lib/geniusScrape');
 const azScrape = require('./lib/azScrape');
@@ -25,24 +27,24 @@ const azScrape = require('./lib/azScrape');
 // crossSource search given a query and returns a list of songs
 app.post('/api/crossSearch/', async function (req, res, next) {
     console.log('Query sent to CustomSearch...');
-    let googleQuery = await googleApi.customSearch(req.body.query);
-    console.log('Done');
     console.log('Genius Scrape Starting...');
-    let geniusQuery = await geniusScrape.geniusSearch(req.body.query);
-    console.log('Done');
-    //todo: elasticdb query
-    let container = mergeSources(geniusQuery, googleQuery);
-    //todo: add container data to db in a seperate call for speed ideally
-    //todo: merge container with elastic query results
-    let queriedSongs = [req.body.query];
-    for (let i in container) queriedSongs.push({cleanAuthor: container[i].cleanAuthor, cleanTitle:container[i].cleanTitle});
-    res.setHeader('Set-Cookie', cookie.serialize('querySongs', queriedSongs, {
-        SameSite: true,
-        Secure: true,
-        path : '/',
-        maxAge: 60 * 30
-    }));
-    res.json(container);
+    Promise.join(googleApi.customSearch(req.body.query), geniusScrape.geniusSearch(req.body.query), function(googleQuery, geniusQuery){
+        console.log('Done');
+        //todo: elasticdb query
+        let container = mergeSources(geniusQuery, googleQuery);
+        //todo: merge container with elastic query results
+        if (!container[0]) return res.statusCode(404).end('No results found');
+        let queriedSongs = [req.body.query];
+        for (let i in container) queriedSongs.push({cleanAuthor: container[i].cleanAuthor, cleanTitle:container[i].cleanTitle});
+        res.setHeader('Set-Cookie', cookie.serialize('querySongs', queriedSongs, {
+            SameSite: true,
+            Secure: true,
+            path : '/',
+            maxAge: 60 * 30
+        }));
+        res.json(container);
+        //todo: add container data to db if it does not exist
+    });
 });
 
 // -------------------------------------------------------------------------------------------------------------------//

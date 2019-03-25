@@ -25,9 +25,9 @@ geniusScrape.geniusSearch = async function(query) {
                 $('.full_width_button').eq(1).click();
             }
         })
-        .wait(500) //not good
+        .wait(1000) //not good
         .evaluate(() => {
-            let queriedData = [{statusCode: 404, message: '404 bad query'}];
+            let queriedData = [false];
             $('.u-display_block').each(function (i, el) {
                 if (i === 5) {
                     return false;

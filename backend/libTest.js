@@ -1,13 +1,13 @@
 let googleApi = require('./lib/googleApi');
 let geniusApi = require('./lib/geniusScrape');
 
-async function test() {
-    let custom = await googleApi.customSearch('react');
-    console.log(custom);
-    let scrape = await geniusApi.geniusSearch('react');
-    console.log(scrape);
-}
-test();
+// async function test() {
+//     let custom = await googleApi.customSearch('react');
+//     console.log(custom);
+//     let scrape = await geniusApi.geniusSearch('react');
+//     console.log(scrape);
+// }
+// test();
 //
 // let x = [ { author: 'Drake',
 //     cleanAuthor: 'DRAKE',
@@ -115,3 +115,5 @@ test();
 // }
 //
 // mergeSources(x, y);
+let u = [{"title":"React","cleanTitle":"REACT","author":"Erick Sermon","cleanAuthor":"ERICKSERMON","link":"https://genius.com/Erick-sermon-react-lyrics","rating":5,"source":"google"},{"title":"Respond/React","cleanTitle":"RESPONDREACT","author":"The Roots","cleanAuthor":"THEROOTS","link":"https://genius.com/The-roots-respond-react-lyrics","rating":4,"source":"google"},{"title":"React","cleanTitle":"REACT","author":"Onyx","cleanAuthor":"ONYX","link":"https://genius.com/Onyx-react-lyrics","rating":3,"source":"google"},{"title":"Chemicals React","cleanTitle":"CHEMICALSREACT","author":"Aly & AJ","cleanAuthor":"ALYAJ","link":"https://genius.com/Aly-and-aj-chemicals-react-lyrics","rating":2,"source":"google"},{"title":"React","cleanTitle":"REACT","author":"Jaylib","cleanAuthor":"JAYLIB","link":"https://genius.com/Jaylib-react-lyrics","rating":1,"source":"google"}];
+console.log(u);
