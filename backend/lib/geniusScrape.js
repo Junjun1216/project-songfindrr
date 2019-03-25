@@ -25,7 +25,7 @@ geniusScrape.geniusSearch = async function(query) {
                 $('.full_width_button').eq(1).click();
             }
         })
-        .wait(1000) //not good
+        .wait(500) //not good
         .evaluate(() => {
             let queriedData = [{statusCode: 404, message: '404 bad query'}];
             $('.u-display_block').each(function (i, el) {
@@ -55,7 +55,8 @@ geniusScrape.geniusSearch = async function(query) {
                     cleanAuthor: cleanAuthor,
                     cleanTitle: cleanTitle,
                     link: link,
-                    rating: 5 - i
+                    rating: 5 - i,
+                    source: 'genius'
                 };
             });
             return queriedData;
