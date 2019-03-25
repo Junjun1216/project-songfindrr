@@ -8,8 +8,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cors());
 
-const request = require('request');
-const cheerio = require('cheerio');
 const nedb = require('nedb');
 const songLyrics = new nedb({ filename: 'db/song.db', autoload: true, timestampData: true});
 let pages = 1;
