@@ -2,20 +2,38 @@
 let geniusScrape = module.exports = {};
 const path = require('path');
 const Nightmare = require('nightmare');
-// set show to false to turn off browser
-const nightmare = Nightmare({
-    show: false,
-    // load custom preload file
-    webPreferences: {
-        preload: path.resolve(__dirname, 'custPreload.js')
-    }
-});
+let nightmare = [];
+let iteration = 0;
+for (let i = 0 ; i < 9; i++) {
+    nightmare.push(Nightmare({
+        show: false,
+        // load custom preload file
+        webPreferences: {
+            preload: path.resolve(__dirname, 'custPreload.js')
+        }
+    }));
+}
+
+geniusScrape.getLyrics = async function(link) {
+    iteration = (iteration === 9) ? iteration + 1 : 0;
+    return await nightmare[iteration]
+        .goto(link)
+        .evaluate(() => {
+            let lyrics = '';
+            $('.referent').each(function (i, el) {
+                lyrics = lyrics + $(el).text() + '\n';
+            });
+            return lyrics;
+        })
+        .end();
+};
 
 geniusScrape.geniusSearch = async function(query) {
+    iteration = (iteration === 9) ? iteration + 1 : 0;
     let encodedQuery = encodeURIComponent(query);
-    return await nightmare
+    return await nightmare[iteration]
         .goto('https://genius.com/search?q=' + encodedQuery)
-        .scrollTo(1500, 0)
+        // .scrollTo(1500, 0)
         .evaluate(() => {
             if ($('.full_width_button').eq(0).text().replace(/\n/g, ' ').trim()
                 == 'Show more lyric matches') {

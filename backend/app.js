@@ -30,7 +30,7 @@ app.post('/api/crossSearch/', async function (req, res, next) {
     console.log('Genius Scrape Starting...');
     Promise.join(googleApi.customSearch(req.body.query), geniusScrape.geniusSearch(req.body.query), function(googleQuery, geniusQuery){
         console.log('Done');
-        //todo: elasticdb query
+        //todo: elasticdb query to promise.join
         let container = mergeSources(geniusQuery, googleQuery);
         //todo: merge container with elastic query results
         if (!container[0]) return res.statusCode(404).end('No results found');
@@ -43,8 +43,19 @@ app.post('/api/crossSearch/', async function (req, res, next) {
             maxAge: 60 * 30
         }));
         res.json(container);
+        //todo: concurrently retrieve song lyrics and store in container
         //todo: add container data to db if it does not exist
     });
+});
+
+//todo: get song info from elastic given its authors and titles
+//for now this is just a get call with the correct input/output params for daniel to test with
+app.get('/api/fetchLyrics/:songs', function(req, res, next) {
+    let result = [];
+    for (let index in req.params.songs) {
+        result.push = 'lyric';
+    }
+    res.json(result);
 });
 
 // -------------------------------------------------------------------------------------------------------------------//
