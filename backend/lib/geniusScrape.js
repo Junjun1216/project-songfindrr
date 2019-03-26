@@ -15,7 +15,7 @@ for (let i = 0 ; i < 9; i++) {
 }
 
 geniusScrape.getLyrics = async function(link) {
-    iteration = (iteration === 9) ? iteration + 1 : 0;
+    iteration = (iteration !== 9) ? iteration + 1 : 0;
     return await nightmare[iteration]
         .goto(link)
         .evaluate(() => {
@@ -29,7 +29,7 @@ geniusScrape.getLyrics = async function(link) {
 };
 
 geniusScrape.geniusSearch = async function(query) {
-    iteration = (iteration === 9) ? iteration + 1 : 0;
+    iteration = (iteration !== 9) ? iteration + 1 : 0;
     let encodedQuery = encodeURIComponent(query);
     return await nightmare[iteration]
         .goto('https://genius.com/search?q=' + encodedQuery)
