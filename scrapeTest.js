@@ -34,6 +34,14 @@ Client.ping({
     }
 });
 
+if (process.env.NODE_ENV === 'production') {
+    app.use(express.static(path.join(__dirname, 'client/build')));
+
+    app.get('*', (req, res) => {
+        res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
+    })
+}
+
 function scrapeAzSearch(url) {
     return new Promise(function (resolve, reject) {
         let queriedData = [];
@@ -263,7 +271,7 @@ app.get('/api/lyrics/:title/:author', function(req, res, next) {
 });
 
 const http = require('http');
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
 http.createServer(app).listen(PORT, function (err) {
     if (err) console.log(err);
