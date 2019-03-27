@@ -74,6 +74,7 @@ function getLyric(link) {
                 }
                 lyrics = lyrics.replace(/\n\n/g, '').replace(/\n/g, ' ');
                 console.log(lyrics);
+                console.log("no error");
                 resolve(lyrics);
             } else {
                 console.log(err);
