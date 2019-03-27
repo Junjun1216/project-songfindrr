@@ -20,7 +20,7 @@ let pages = 1;
 // elasticsearch component
 let elasticsearch = require('elasticsearch');
 let Client = new elasticsearch.Client({
-    host: 'localhost:9200'
+    host: 'localhost:9200',
 });
 
 // ping the client
@@ -193,6 +193,7 @@ app.post('/api/lyrics/', async function (req, res, next) {
                 else {
                     console.log('index exists');
                     //console.log(result);
+                    // result.hits.hits.foreach and then get author/title/link
                 }
             });
 

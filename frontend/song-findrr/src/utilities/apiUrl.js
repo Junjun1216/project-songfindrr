@@ -1,3 +1,3 @@
-export const local_url = 'https://songfindrr.me/'
+export const local_url = 'https://localhost:3001/'
 
 export const search_lyrics = 'api/lyrics';
