@@ -156,14 +156,16 @@ app.post('/api/lyrics/', async function (req, res, next) {
         // });
 
         let queriedData = await scrapeAzSearch('https://search.azlyrics.com/search.php?q=' + req.body.query + '&w=songs&p=' + (x+1));
+        console.log("data queried");
         let count = 0;
         console.log('fetching lyrics');
         for (let index in queriedData) {
             let lyrics = await getLyric(queriedData[index].link);
+            console.log("lyrics got");
             queriedData[index]['lyrics'] = lyrics;
             // this is where we insert the song into db
             // songLyrics.insert(queriedData[index]);
-            Client.search({
+            /*Client.search({
                 index: 'songs',
                 type: '_doc',
                 body: {
@@ -203,7 +205,7 @@ app.post('/api/lyrics/', async function (req, res, next) {
                     //console.log(result);
                     // result.hits.hits.foreach and then get author/title/link
                 }
-            });
+            });*/
 
             if (count == 5) break;
             ++count;
