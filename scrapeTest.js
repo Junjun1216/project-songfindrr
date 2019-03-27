@@ -73,8 +73,10 @@ function getLyric(link) {
                     lyrics = $('.ringtone').nextAll().eq(5).text();
                 }
                 lyrics = lyrics.replace(/\n\n/g, '').replace(/\n/g, ' ');
+                console.log(lyrics);
                 resolve(lyrics);
             } else {
+                console.log(err);
                 reject(err.statusCode);
             }
         });
@@ -160,9 +162,13 @@ app.post('/api/lyrics/', async function (req, res, next) {
         let count = 0;
         console.log('fetching lyrics');
         for (let index in queriedData) {
-            let lyrics = await getLyric(queriedData[index].link);
-            console.log("lyrics got");
-            queriedData[index]['lyrics'] = lyrics;
+            try {
+                let lyrics = await getLyric(queriedData[index].link);
+                console.log("lyrics got");
+                queriedData[index]['lyrics'] = lyrics;
+            } catch (err) {
+                console.log(err);
+            }
             // this is where we insert the song into db
             // songLyrics.insert(queriedData[index]);
             /*Client.search({
