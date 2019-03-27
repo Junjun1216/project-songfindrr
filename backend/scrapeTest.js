@@ -18,9 +18,11 @@ let pages = 1;
 
 
 // elasticsearch component
+let bonsai_url = process.env.BONSAI_URL;
 let elasticsearch = require('elasticsearch');
 let Client = new elasticsearch.Client({
-    host: 'localhost:9200',
+    host: bonsai_url || 'localhost:9200',
+    log: 'trace'
 });
 
 // ping the client
@@ -163,10 +165,10 @@ app.post('/api/lyrics/', async function (req, res, next) {
                         "bool": {
                             "must": [
                             {
-                                "match": { author: queriedData[index]['author'] }
+                                "match_phrase": { author: queriedData[index]['author'] }
                             },
                             {
-                                "match": { title: queriedData[index]['title'] }
+                                "match_phrase": { title: queriedData[index]['title'] }
                             }
 
                         ]
