@@ -7,7 +7,7 @@ const maxInstances = 30;
 let iteration = 0;
 for (let i = 0 ; i < maxInstances; i++) {
     nightmare.push(Nightmare({
-        show: false,
+        show: true,
         // load custom preload file
         webPreferences: {
             preload: path.resolve(__dirname, 'custPreload.js')
@@ -20,10 +20,16 @@ geniusScrape.getLyrics = async function(link) {
     return nightmare[iteration]
         .goto(link)
         .evaluate(() => {
-            let lyrics = '';
-            $('.referent').each(function (i, el) {
-                lyrics = lyrics + $(el).text() + '\n';
-            });
+            let lyrics = $('p').eq(0).text().replace(/\[.*?\]/g, "");
+            for (let index = 1; index < lyrics.length; index++) {
+                if ((lyrics[index] == lyrics[index].toUpperCase())
+                    && (lyrics[index].match(/[A-Z]/i))
+                    && (lyrics[index-1] == lyrics[index-1].toLowerCase())
+                    && (lyrics[index-1].match(/[A-Z]/i))) {
+                    lyrics = [lyrics.slice(0, index), lyrics.slice(index)].join('\n');
+                    index++;
+                }
+            }
             return lyrics;
         })
         .end();
@@ -36,7 +42,7 @@ geniusScrape.geniusSearch = async function(query) {
         .goto('https://genius.com/search?q=' + encodedQuery)
         // .scrollTo(1500, 0)
         .evaluate(() => {
-            if ($('.full_width_button').eq(0).text().replace(/\n/g, ' ').trim()
+            if ($('.full_width_button').eq(0).text().replace(/\[]/g, ' ').trim()
                 == 'Show more lyric matches') {
                 $('.full_width_button').eq(0).click();
             } else if ($('.full_width_button').eq(1).text().replace(/\n/g, ' ').trim()
