@@ -21,8 +21,8 @@ let pages = 1;
 let bonsai_url = process.env.BONSAI_URL;
 let elasticsearch = require('elasticsearch');
 let Client = new elasticsearch.Client({
-    host: bonsai_url || 'localhost:9200',
-    log: 'trace'
+    //host: bonsai_url || 'localhost:9200'
+    host: 'localhost:9200'
 });
 
 // ping the client
@@ -199,7 +199,7 @@ app.post('/api/lyrics/', async function (req, res, next) {
                 }
             });
 
-            if (count == 5) break;
+            if (count == 1) break;
             ++count;
         }
         console.log('done');
