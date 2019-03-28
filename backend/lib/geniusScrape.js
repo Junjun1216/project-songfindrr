@@ -3,8 +3,9 @@ let geniusScrape = module.exports = {};
 const path = require('path');
 const Nightmare = require('nightmare');
 let nightmare = [];
+const maxInstances = 30;
 let iteration = 0;
-for (let i = 0 ; i < 9; i++) {
+for (let i = 0 ; i < maxInstances; i++) {
     nightmare.push(Nightmare({
         show: false,
         // load custom preload file
@@ -15,8 +16,8 @@ for (let i = 0 ; i < 9; i++) {
 }
 
 geniusScrape.getLyrics = async function(link) {
-    iteration = (iteration !== 9) ? iteration + 1 : 0;
-    return await nightmare[iteration]
+    iteration = (iteration !== maxInstances) ? iteration + 1 : 0;
+    return nightmare[iteration]
         .goto(link)
         .evaluate(() => {
             let lyrics = '';
@@ -29,7 +30,7 @@ geniusScrape.getLyrics = async function(link) {
 };
 
 geniusScrape.geniusSearch = async function(query) {
-    iteration = (iteration !== 9) ? iteration + 1 : 0;
+    iteration = (iteration !== maxInstances) ? iteration + 1 : 0;
     let encodedQuery = encodeURIComponent(query);
     return await nightmare[iteration]
         .goto('https://genius.com/search?q=' + encodedQuery)

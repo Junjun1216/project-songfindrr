@@ -8,17 +8,13 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cors());
 
-const nedb = require('nedb');
-const songLyrics = new nedb({ filename: 'db/song.db', autoload: true, timestampData: true});
-let pages = 1;
-
 const cookie = require('cookie');
 
 const Promise = require('bluebird');
 
 const googleApi = require('./lib/googleApi');
 const geniusScrape = require('./lib/geniusScrape');
-const azScrape = require('./lib/azScrape');
+const elastic = require('./lib/elastic');
 
 // -------------------------------------------------------------------------------------------------------------------//
 // cross source calls
@@ -28,90 +24,44 @@ const azScrape = require('./lib/azScrape');
 app.post('/api/crossSearch/', async function (req, res, next) {
     console.log('Query sent to CustomSearch...');
     console.log('Genius Scrape Starting...');
-    Promise.join(googleApi.customSearch(req.body.query), geniusScrape.geniusSearch(req.body.query), function(googleQuery, geniusQuery){
+    Promise.join(googleApi.customSearch(req.body.query), geniusScrape.geniusSearch(req.body.query), elastic.elasticSearch(req.body.query), function(googleQuery, geniusQuery, elasticQuery){
         console.log('Done');
-        //todo: elasticdb query to promise.join
-        let container = mergeSources(geniusQuery, googleQuery);
-        //todo: merge container with elastic query results
-        if (!container[0]) return res.statusCode(404).end('No results found');
+        let newResult = mergeSources(geniusQuery, googleQuery);
+        let allResult = mergeSources(newResult, elasticQuery);
+        if (!allResult[0]) return res.status(404).end('No results found');
         let queriedSongs = [req.body.query];
-        for (let i in container) queriedSongs.push({cleanAuthor: container[i].cleanAuthor, cleanTitle:container[i].cleanTitle});
+        for (let i in allResult) queriedSongs.push({cleanAuthor: allResult[i].cleanAuthor, cleanTitle:allResult[i].cleanTitle});
         res.setHeader('Set-Cookie', cookie.serialize('querySongs', queriedSongs, {
             SameSite: true,
             Secure: true,
             path : '/',
             maxAge: 60 * 30
         }));
-        res.json(container);
-        //todo: concurrently retrieve song lyrics and store in container
-        //todo: add container data to db if it does not exist
-    });
-});
-
-//todo: get song info from elastic given its authors and titles
-//for now this is just a get call with the correct input/output params for daniel to test with
-app.get('/api/fetchLyrics/:songs', function(req, res, next) {
-    let result = [];
-    for (let index in req.params.songs) {
-        result.push = 'lyric';
-    }
-    res.json(result);
-});
-
-// -------------------------------------------------------------------------------------------------------------------//
-// az scrape calls
-
-// curl -X POST -H "Content-Type: application/json" -d '{"query":"react"}' http://localhost:3000/api/lyrics/
-// return a song list given a query
-app.post('/api/azlyrics/', async function (req, res, next) {
-    console.log('Searching Az for ' + req.body.query + ' for 1 page');
-    for (let x = 0; x < pages; ++x) {
-        let queriedData = await azScrape.scrapeAzSearch('https://search.azlyrics.com/search.php?q=' + req.body.query + '&w=songs&p=' + (x+1));
-        let count = 0;
-        console.log('fetching lyrics');
-        for (let index in queriedData) {
-            let lyrics = await azScrape.getLyric(queriedData[index].link);
-            queriedData[index]['lyrics'] = lyrics.substring(0, 30);
-            songLyrics.insert(queriedData[index]);
-            if (count == 5) break;
-            ++count;
-        }
-        console.log('done');
-        res.json(queriedData);
-    }
-});
-
-// find the lyrics for a list of songs and add to db
-app.post('/api/lyric/', async function (req, res, next) {
-    let data = req.body.data;
-    for (let index in data) {
-        let lyrics = await getLyric(data[index].link);
-        data[index]['lyrics'] = lyrics;
-        songLyrics.insert(data[index]);
-    }
-});
-
-// curl -X GET http://localhost:3000/api/lyrics/React/ReactValora
-app.get('/api/lyrics/:title/:author', function(req, res, next) {
-    songLyrics.findOne({title: req.params.title, _id: req.params.author}, function (err, song) {
-        if (!song) return res.status(404).end('title not found');
-        request(song.link, (err, res, html) => {
-            if (!err && res.statusCode == 200) {
-                const $2 = cheerio.load(html);
-                let lyrics = $2('.ringtone').nextAll().eq(3).text();
-                if (lyrics == '') {
-                    lyrics = $2('.ringtone').nextAll().eq(5).text();
-                }
-                lyrics = lyrics.replace(/\n\n/g, '').replace(/\n/g, ' ');
-                songLyrics.update({_id: song._id}, {lyrics:lyrics}, function(err, changes) {
-                    return res.json(lyrics);
-                });
-            } else {
-                console.log(res.statusCode);
-                res.statusCode(503).end('server unavailable');
+        res.json(allResult);
+        Promise.map(newResult, function(song) {
+            console.log('Scraping ' + song.title + ' by: ' + song.author);
+            return geniusScrape.getLyrics(song.link);
+        }, {concurrency: 5}).then(async function(lyrics) {
+            console.log(lyrics.length + ' good response');
+            for (let index in newResult) {
+                newResult[index]['lyrics'] = lyrics[index];
+                let res = await elastic.addSong(newResult[index])[0];
+                console.log(res);
             }
+        }, function(error) {
+            console.log(error);
+            console.log('error: new data not stored');
         });
     });
+});
+
+// curl -X GET -H "Content-Type: application/json" -d '{"cleanAuthor": "DRAKE", "cleanTitle": "THELANGUAGE"}' http://localhost:3001/api/getLyrics/
+//get song info from elastic given its authors and titles
+app.get('/api/fetchLyrics/', async function(req, res, next) {
+    let result = await elastic.getLyric(req.body.song);
+    if (!result) return res.status(404).end();
+    console.log(result);
+    return res.json(result);
 });
 
 // -------------------------------------------------------------------------------------------------------------------//

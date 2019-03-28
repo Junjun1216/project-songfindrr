@@ -35,7 +35,7 @@ googleApi.customSearch = async function(query) {
                             .replace(/[()'.&?/,-]/g, '')
                             .toUpperCase();
                         if (link.toString().includes('lyrics')) {
-                            queryData[count] = ({
+                            queryData[count] = {
                                 title: title,
                                 cleanTitle: cleanTitle,
                                 author: author,
@@ -43,7 +43,7 @@ googleApi.customSearch = async function(query) {
                                 link: link,
                                 rating: 5 - count,
                                 source: 'google'
-                            });
+                            };
                             count++;
                         }
                     }

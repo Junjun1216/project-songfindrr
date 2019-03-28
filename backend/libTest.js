@@ -1,5 +1,6 @@
 let googleApi = require('./lib/googleApi');
 let geniusApi = require('./lib/geniusScrape');
+let elasticDb = require('./lib/elastic');
 let Promise = require('bluebird');
 
 async function bluebirdjoin() {
@@ -18,17 +19,78 @@ async function getLyrics() {
 
 // getLyrics();
 
-async function bluebirdmap() {
-    let links = ['https://genius.com/Drake-the-language-lyrics', 'https://genius.com/Drake-furthest-thing-lyrics'];
+let songs = [ { title: 'React',
+    cleanTitle: 'REACT',
+    author: 'Erick Sermon',
+    cleanAuthor: 'ERICKSERMON',
+    link: 'https://genius.com/Erick-sermon-react-lyrics',
+    rating: 5,
+    source: 'google' },
+    { title: 'Respond/React',
+        cleanTitle: 'RESPONDREACT',
+        author: 'The Roots',
+        cleanAuthor: 'THEROOTS',
+        link: 'https://genius.com/The-roots-respond-react-lyrics',
+        rating: 4,
+        source: 'google' },
+    { title: 'React',
+        cleanTitle: 'REACT',
+        author: 'Onyx',
+        cleanAuthor: 'ONYX',
+        link: 'https://genius.com/Onyx-react-lyrics',
+        rating: 3,
+        source: 'google' },
+    { title: 'Chemicals React',
+        cleanTitle: 'CHEMICALSREACT',
+        author: 'Aly & AJ',
+        cleanAuthor: 'ALYAJ',
+        link: 'https://genius.com/Aly-and-aj-chemicals-react-lyrics',
+        rating: 2,
+        source: 'google' },
+    { title: 'React',
+        cleanTitle: 'REACT',
+        author: 'Jaylib',
+        cleanAuthor: 'JAYLIB',
+        link: 'https://genius.com/Jaylib-react-lyrics',
+        rating: 1,
+        source: 'google' } ];
 
-    Promise.map(links, function(link) {
-        return geniusApi.getLyrics(link);
-    }).then(function(lyrics) {
-         console.log(lyrics)
+async function bluebirdmap(songs) {
+    let result = songs;
+    Promise.map(songs, function(song) {
+        return geniusApi.getLyrics(song.link);
+    }, {concurrency: 5}).then(function(lyrics) {
+         for (let index in result) {
+             result[index]['lyrics'] = lyrics[index];
+             console.log('\n');
+             console.log(lyrics[index]);
+         }
+         //console.log(result);
     })
 }
 
-// bluebirdmap();
+// bluebirdmap(songs);
+
+let song1 = [{ title: 'React',
+    cleanTitle: 'REACT',
+    author: 'Erick Sermon',
+    cleanAuthor: 'ERICKSERMON',
+    link: 'https://genius.com/Erick-sermon-react-lyrics',
+    rating: 5,
+    source: 'google',
+    lyrics: 'Just Blaze, yeah Burn Out'}];
+
+async function elastic(songs) {
+    // for (let index in songs) {
+    //     await elasticDb.addSong(songs[index]);
+    // }
+    // let result = await elasticDb.elasticSearch('yeah');
+    let result = await elasticDb.getLyric({cleanAuthor: 'ERICKSERMON', cleanTitle: 'REACT'});
+    console.log(result);
+
+}
+
+// elastic(song1);
 
 let x = [ { author: 'Drake',
     cleanAuthor: 'DRAKE',
