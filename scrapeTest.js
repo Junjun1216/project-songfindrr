@@ -18,9 +18,10 @@ let pages = 1;
 
 
 // elasticsearch component
+let bonsai_url = process.env.BONSAI_URL;
 let elasticsearch = require('elasticsearch');
 let Client = new elasticsearch.Client({
-    host: 'localhost:9200',
+    host: bonsai_url || 'localhost:9200',
 });
 
 // ping the client
