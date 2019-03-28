@@ -6,18 +6,17 @@ class LyricResults extends Component {
 
     constructor(props){
         super(props);
-        this.state = {
-            results: this.props.results
-        };
     }
 
     componentDidMount(){
-        console.log(this.state.results);
+        console.log("hello ", this.props);
     }
 
     componentDidUpdate(nextProps){
+        console.log(nextProps)
         if (nextProps.results !== this.props.results) {
             console.log(nextProps)
+            this.fetchData(this.props.results)
             this.setState({
                 results: nextProps.results,
             });
@@ -25,38 +24,18 @@ class LyricResults extends Component {
         }
     }
 
-    search() {
-
-        console.log("results ", this.state.results)
-
+    onChangeResults(){
+        this.props.changeResults(this.state.results);
     }
 
     render() {
-        const { resultSearchStyle } = styles;
 
         return (
-            
             <MuiThemeProvider>
-                        
-                <div style={resultSearchStyle}>
-                    <h1>Results</h1>
-                    <Button variant="contained" color="primary" style={this.state.searchBtnStyle} onClick={() => this.search()}>
-                    Search
-                    </Button>
-                </div>
-
+                <h1>hi</h1>
             </MuiThemeProvider>
         )
     }
-}
-
-const styles = {
-
-    resultSearchStyle: {
-        display: 'block'
-    },
-
-    
 }
 
 export default LyricResults;
