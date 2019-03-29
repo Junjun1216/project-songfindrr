@@ -19,6 +19,14 @@ const elastic = require('./lib/elastic');
 // -------------------------------------------------------------------------------------------------------------------//
 // cross source calls
 
+if (process.env.NODE_ENV === 'production') {
+    app.use(express.static(path.join(__dirname, 'client/build')));
+
+    app.get('*', (req, res) => {
+        res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
+    })
+}
+
 // curl -X POST -H "Content-Type: application/json" -d '{"query":"react"}' http://localhost:3001/api/crossSearch/
 // crossSource search given a query and returns a list of songs
 app.post('/api/crossSearch/', async function (req, res, next) {
@@ -102,7 +110,7 @@ function mergeSources(x, y) {
 }
 
 const http = require('http');
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
 http.createServer(app).listen(PORT, function (err) {
     if (err) console.log(err);
