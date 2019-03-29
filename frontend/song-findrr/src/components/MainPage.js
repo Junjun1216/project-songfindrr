@@ -14,51 +14,20 @@ import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
 import ListSubheader from '@material-ui/core/ListSubheader';
 
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Slide from '@material-ui/core/Slide';
+
 // API
-import { local_url, search_lyrics, cross_search, fetch_lyrics } from "../utilities/apiUrl";
+import { cross_search, fetch_lyrics } from "../utilities/apiUrl";
 import * as apiManager from  '../helpers/apiManager';
 
-const styles = {
-
-    lyricSearchStyle: {
-        width: '100vw'
-    },
-
-    searchBtnStyle: {
-        marginTop: '10px',
-    },
+function Transition(props) {
+    return <Slide direction="up" {...props} />;
 }
-
-const Results = ({results}) => {
-
-        return(
-            <div>
-                <GridList cellHeight={180}>
-                    <GridListTile key="Subheader" cols={2} style={{ height: 'auto' }}>
-                        <ListSubheader component="div"></ListSubheader>
-                    </GridListTile>
-                    {results.map(row => (
-                        <GridListTile key={row.link} style={{ width: '33%', backgroundColor: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)'}}>
-                            <Card style={{ backgroundColor: "#D0CECE" }}>
-                                <div>
-                                    <CardContent>
-                                        <Typography component="h5" variant="h5">
-                                            {row.author} - {row.title}
-                                        </Typography>
-                                    </CardContent>
-                                    <div>
-                                        <IconButton aria-label="Play/pause">
-                                            <PlayArrowIcon/>
-                                        </IconButton>
-                                    </div>
-                                </div>
-                            </Card>
-                        </GridListTile>
-                    ))}
-                </GridList>
-            </div>
-        );
-    }
 
 class MainPage extends Component {
 
@@ -72,8 +41,12 @@ class MainPage extends Component {
             lyric: '',
             results: [],
             open: false,
+            fetchedLyrics: '',
+            cleanAuthor: '',
+            cleanTitle: '',
         };
         this.search = this.search.bind(this);
+        this.fetchLyrics = this.fetchLyrics.bind(this);
     }
 
     lyricChange = lyric => event => {
@@ -82,6 +55,14 @@ class MainPage extends Component {
 
     imageClick = () => {
         console.log("click");
+    };
+
+    handleOpen = () => {
+        this.setState({ open: true });
+    };
+    
+      handleClose = () => {
+        this.setState({ open: false });
     };
 
     search(e) {
@@ -101,9 +82,10 @@ class MainPage extends Component {
         };
 
         console.log(params)
-        apiManager.searchApi(local_url + cross_search, params).then((res) => {
+        apiManager.searchApi(cross_search, params).then((res) => {
             if(res){
                 this.setState({ results: res.data });
+                console.log(this.state.results);
             }
 
         }).catch((err) => {
@@ -112,17 +94,38 @@ class MainPage extends Component {
 
     }
 
+    fetchLyrics(cleanAuthor, cleanTitle){
+
+        let params = { 
+            cleanAuthor: cleanAuthor,
+            cleanTitle: cleanTitle,
+        };
+
+        console.log(params)
+        apiManager.get(fetch_lyrics, params).then((res) => {
+            if(res){
+                this.setState({ fetchedLyrics: res.data });
+                this.setState({ cleanAuthor: cleanAuthor });
+                this.setState({ cleanTitle: cleanTitle });
+                console.log(this.state.fetchedLyrics);
+            }
+
+        }).catch((err) => {
+            console.log(err);
+        });
+
+    };
+
     componentDidMount(){
     }
     
     render() {
-        const { lyricSearchStyle } = styles;
 
         return (
 
             <MuiThemeProvider>
             
-                <div style={lyricSearchStyle}>
+                <div>
                     <div>
                         <img src={logo} className="App-logo" alt="logo" onClick={this.imageClick}/>
                     </div>
@@ -134,13 +137,67 @@ class MainPage extends Component {
                             margin="normal"
                         />
                         <br/>
-                        <Button variant="contained" color="primary" style={this.state.searchBtnStyle} onClick={this.search}>
+                        <Button variant="contained" color="primary" onClick={this.search}>
                         Findrr
                         </Button>
                         <br/>
                 </div>
                 <br/>
-                <Results results={this.state.results}/>
+                <div>
+                <GridList cellHeight={180}>
+                    <GridListTile key="Subheader" cols={2} style={{ height: 'auto' }}>
+                        <ListSubheader component="div"></ListSubheader>
+                    </GridListTile>
+                    {this.state.results && this.state.results.map(row => (
+                        <GridListTile key={row.link} style={{ width: '33%', backgroundColor: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)'}}>
+                            <Card style={{ backgroundColor: "#D0CECE" }}>
+                                <div>
+                                    <CardContent>
+                                        <Typography component="h5" variant="h5">
+                                            {row.author} - {row.title}
+                                        </Typography>
+                                    </CardContent>
+                                    <div>
+                                        <IconButton aria-label="Play/pause">
+                                            <PlayArrowIcon/>
+                                        </IconButton>
+                                    </div>
+                                    <div>
+                                        <Button variant="outlined" color="primary" onClick={this.handleOpen}>
+                                            Show Lyrics
+                                        </Button>
+                                        <Button variant="outlined" color="primary" onClick={() => this.fetchLyrics(row.cleanAuthor, row.cleanTitle)}>
+                                            Fetch Lyrics
+                                        </Button>
+                                        <Dialog
+                                            open={this.state.open}
+                                            TransitionComponent={Transition}
+                                            keepMounted
+                                            onClose={this.handleClose}
+                                            aria-labelledby="alert-dialog-slide-title"
+                                            aria-describedby="alert-dialog-slide-description"
+                                        >
+                                        <DialogTitle id="alert-dialog-slide-title">
+                                            {this.state.cleanAuthor} - {this.state.cleanTitle}
+                                        </DialogTitle>
+                                        <DialogContent>
+                                            <DialogContentText id="alert-dialog-slide-description">
+                                                {this.state.fetchedLyrics}
+                                            </DialogContentText>
+                                        </DialogContent>
+                                        <DialogActions>
+                                            <Button onClick={this.handleClose} color="primary">
+                                            Close
+                                            </Button>
+                                        </DialogActions>
+                                        </Dialog>
+                                    </div>
+                                </div>
+                            </Card>
+                        </GridListTile>
+                    ))}
+                </GridList>
+            </div>
 
             </MuiThemeProvider>
             

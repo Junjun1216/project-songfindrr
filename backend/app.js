@@ -58,7 +58,7 @@ app.post('/api/crossSearch/', async function (req, res, next) {
 // curl -X GET -H "Content-Type: application/json" -d '{"cleanAuthor": "DRAKE", "cleanTitle": "THELANGUAGE"}' http://localhost:3001/api/getLyrics/
 //get song info from elastic given its authors and titles
 app.get('/api/fetchLyrics/', async function(req, res, next) {
-    let result = await elastic.getLyric(req.body.song);
+    let result = await elastic.getLyric(req.headers.cleanauthor, req.headers.cleantitle);
     if (!result) return res.status(404).end();
     console.log(result);
     return res.json(result);

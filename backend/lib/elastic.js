@@ -62,7 +62,7 @@ elastic.addSong = async function(song) {
     });
 };
 
-elastic.getLyric = async function(song) {
+elastic.getLyric = async function(cleanAuthor, cleanTitle) {
     let result = await Client.search({
         index: 'songs',
         type: 'doc',
@@ -71,10 +71,10 @@ elastic.getLyric = async function(song) {
                 "bool": {
                     "must": [
                         {
-                            "match": { cleanAuthor: song.cleanAuthor }
+                            "match": { cleanAuthor: cleanAuthor }
                         },
                         {
-                            "match": { cleanTitle: song.cleanTitle }
+                            "match": { cleanTitle: cleanTitle }
                         }
 
                     ]
@@ -84,10 +84,10 @@ elastic.getLyric = async function(song) {
     });
     return new Promise(function (resolve) {
         if (result.hits.hits.length === 0) {
-            console.log('song not found: ' + song.cleanTitle);
+            console.log('song not found: ' + cleanTitle);
             resolve(false);
         } else {
-            console.log('song found: ' + song.cleanTitle);
+            console.log('song found: ' + cleanTitle);
             resolve(result.hits.hits[0]._source.lyrics);
         }
     });
@@ -95,62 +95,63 @@ elastic.getLyric = async function(song) {
 
 elastic.elasticSearch = async function(query) {
     console.log ('Searching Elastic For : ' + query);
-    let result = await Client.search({
-        index: 'songs',
-        type: 'doc',
-        body: /*{
-            "query": {
-                "query_string": {
-                    "default_field" : "lyrics",
-                    "query" : req.body.lyric
-                }
+    // let result = await Client.search({
+    //     index: 'songs',
+    //     type: 'doc',
+    //     body: /*{
+    //         "query": {
+    //             "query_string": {
+    //                 "default_field" : "lyrics",
+    //                 "query" : req.body.lyric
+    //             }
 
-            }
-        }*/
-            {
-                "query" : {
-                    "bool": {
-                        "should": [{
-                            "bool" : {
-                                "must": [
-                                    {
-                                        "match_phrase": { "lyrics": query}
-                                    }
+    //         }
+    //     }*/
+    //         {
+    //             "query" : {
+    //                 "bool": {
+    //                     "should": [{
+    //                         "bool" : {
+    //                             "must": [
+    //                                 {
+    //                                     "match_phrase": { "lyrics": query}
+    //                                 }
 
-                                ],
-                                // boost the _score if whole phrase matches
-                                "boost" : 3.0
-                            }
-                        }, {
-                            "bool" : {
-                                "must" : [
-                                    {
-                                        "match": {"lyrics" : query}
-                                    }
-                                ]
-                            }
-                        }]
-                    }
-                }
+    //                             ],
+    //                             // boost the _score if whole phrase matches
+    //                             "boost" : 3.0
+    //                         }
+    //                     }, {
+    //                         "bool" : {
+    //                             "must" : [
+    //                                 {
+    //                                     "match": {"lyrics" : query}
+    //                                 }
+    //                             ]
+    //                         }
+    //                     }]
+    //                 }
+    //             }
 
-            }
-    });
+    //         }
+    // });
     return new Promise(function (resolve) {
-        let queriedData = [];
-        for (let i in result.hits.hits) {
-            if (i == 5) break;
-            let query = {
-                title: result.hits.hits[i]._source.title,
-                author: result.hits.hits[i]._source.author,
-                cleanTitle: result.hits.hits[i]._source.cleanTitle,
-                cleanAuthor: result.hits.hits[i]._source.cleanAuthor,
-                link: result.hits.hits[i]._source.link,
-                rating: 5 - i,
-                source: 'elastic'};
-            queriedData.push(query);
-        }
-        if (queriedData.length === 0) queriedData[0] = false;
-        resolve(queriedData);
+        // let queriedData = [];
+        // for (let i in result.hits.hits) {
+        //     if (i == 5) break;
+        //     let query = {
+        //         title: result.hits.hits[i]._source.title,
+        //         author: result.hits.hits[i]._source.author,
+        //         cleanTitle: result.hits.hits[i]._source.cleanTitle,
+        //         cleanAuthor: result.hits.hits[i]._source.cleanAuthor,
+        //         link: result.hits.hits[i]._source.link,
+        //         rating: 5 - i,
+        //         source: 'elastic'};
+        //     queriedData.push(query);
+        // }
+        // if (queriedData.length === 0) queriedData[0] = false;
+        // resolve(queriedData);
+        resolve([false]);
     });
 };
 

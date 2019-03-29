@@ -4,7 +4,8 @@ import Promise from 'bluebird';
 export const get = (endpoint, params) => {
     
     return new Promise(function(resolve, reject){
-        axios.get(endpoint, params)
+
+        axios.get(endpoint, { headers: { 'Content-Type': 'application/json', 'cleanAuthor': params.cleanAuthor, 'cleanTitle': params.cleanTitle}})
             .then((response) => {
                 resolve(response);     
             })

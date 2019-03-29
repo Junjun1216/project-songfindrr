@@ -7,7 +7,7 @@ const maxInstances = 30;
 let iteration = 0;
 for (let i = 0 ; i < maxInstances; i++) {
     nightmare.push(Nightmare({
-        show: true,
+        show: false,
         // load custom preload file
         webPreferences: {
             preload: path.resolve(__dirname, 'custPreload.js')
