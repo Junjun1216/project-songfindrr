@@ -199,7 +199,7 @@ app.post('/api/lyrics/', async function (req, res, next) {
                 }
             });
 
-            if (count == 5 break;
+            if (count == 5) break;
             ++count;
         }
         console.log('done');
