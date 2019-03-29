@@ -41,7 +41,7 @@ app.post('/api/crossSearch/', async function (req, res, next) {
         Promise.map(newResult, function(song) {
             console.log('Scraping ' + song.title + ' by: ' + song.author);
             return geniusScrape.getLyrics(song.link);
-        }, {concurrency: 5}).then(async function(lyrics) {
+        }, {concurrency: 20}).then(async function(lyrics) {
             console.log(lyrics.length + ' good response');
             for (let index in newResult) {
                 newResult[index]['lyrics'] = lyrics[index];
