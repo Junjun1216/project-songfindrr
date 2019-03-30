@@ -1,3 +1,4 @@
+//this is currently not implemented into working version
 "use strict";
 let azScrape = module.exports = {};
 const request = require('request');

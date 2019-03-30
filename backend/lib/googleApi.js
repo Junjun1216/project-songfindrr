@@ -13,7 +13,10 @@ googleApi.customSearch = async function(query) {
     let queryData = [false];
     return new Promise(function (resolve, reject) {
         request.get(payload, function (err, res, body) {
-            if (err) resolve(queryData);
+            if (err) {
+                console.log('Bad Response From CustomSearch: ' + query + ' ' + err);
+                resolve(queryData);
+            }
             let results = JSON.parse(body).items;
             if (!results) {
                 resolve(queryData);

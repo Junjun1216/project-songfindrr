@@ -22,12 +22,14 @@ const elastic = require('./lib/elastic');
 // curl -X POST -H "Content-Type: application/json" -d '{"query":"react"}' http://localhost:3001/api/crossSearch/
 // crossSource search given a query and returns a list of songs
 app.post('/api/crossSearch/', async function (req, res, next) {
-    console.log('Query sent to CustomSearch...');
-    console.log('Genius Scrape Starting...');
-    Promise.join(googleApi.customSearch(req.body.query), geniusScrape.geniusSearch(req.body.query), elastic.elasticSearch(req.body.query), function(googleQuery, geniusQuery, elasticQuery){
+    console.log('New CrossSearch Staring: ' + req.body.query);
+    Promise.join(googleApi.customSearch(req.body.query), geniusScrape.geniusSearch(req.body.query), elastic.elasticSearch(req.body.query), async function(googleQuery, geniusQuery, elasticQuery){
         console.log('Done');
         let newResult = mergeSources(geniusQuery, googleQuery);
         let allResult = mergeSources(newResult, elasticQuery);
+        console.log(newResult.length + ' new results');
+        console.log(elasticQuery.length + ' db results');
+        console.log(allResult.length + ' unique results');
         if (!allResult[0]) return res.status(404).end('No results found');
         let queriedSongs = [req.body.query];
         for (let i in allResult) queriedSongs.push({cleanAuthor: allResult[i].cleanAuthor, cleanTitle:allResult[i].cleanTitle});
@@ -38,20 +40,27 @@ app.post('/api/crossSearch/', async function (req, res, next) {
             maxAge: 60 * 30
         }));
         res.json(allResult);
-        Promise.map(newResult, function(song) {
-            console.log('Scraping ' + song.title + ' by: ' + song.author);
-            return geniusScrape.getLyrics(song.link);
-        }, {concurrency: 5}).then(async function(lyrics) {
-            console.log(lyrics.length + ' good response');
-            for (let index in newResult) {
-                newResult[index]['lyrics'] = lyrics[index];
-                let res = await elastic.addSong(newResult[index])[0];
-                console.log(res);
+        if (newResult[0]) {
+            for (let i = 0; i < newResult.length; i++) {
+                if (await elastic.checkExistence(newResult[i])) {
+                    newResult.splice(i, 1);
+                    i--;
+                }
             }
-        }, function(error) {
-            console.log(error);
-            console.log('error: new data not stored');
-        });
+            Promise.map(newResult, function (song) {
+                console.log('Scraping ' + song.title + ' by: ' + song.author);
+                return geniusScrape.getLyrics(song.link);
+            }, {concurrency: 20}).then(async function (lyrics) {
+                for (let index in lyrics) {
+                    if (lyrics[index] !== '' && lyrics[index]) {
+                        newResult[index]['lyrics'] = lyrics[index];
+                        await elastic.addSong(newResult[index]);
+                    } else {
+                        console.log('Lyrics Scrape Failed: ' + newResult[index].title);
+                    }
+                }
+            });
+        }
     });
 });
 
@@ -59,8 +68,7 @@ app.post('/api/crossSearch/', async function (req, res, next) {
 //get song info from elastic given its authors and titles
 app.get('/api/fetchLyrics/', async function(req, res, next) {
     let result = await elastic.getLyric(req.headers.cleanauthor, req.headers.cleantitle);
-    if (!result) return res.status(404).end();
-    console.log(result);
+    if (!result) return res.status(404).end('No Song Found With Query: ' + req.headers.cleantitle + '-' + req.headers.cleanauthor);
     return res.json(result);
 });
 
@@ -70,7 +78,7 @@ app.get('/api/fetchLyrics/', async function(req, res, next) {
 function mergeSources(x, y) {
     if (x[0] === false) return y;
     if (y[0] === false) return x;
-    let container = x;
+    let container = JSON.parse(JSON.stringify(x));
     for (let i = 0; i < y.length; i++) {
         let found = false;
         for (let j = 0; j < x.length; j++) {

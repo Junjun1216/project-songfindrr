@@ -1,3 +1,5 @@
+//this is currently not implemented into working version
+"use strict";
 const request = require('request');
 const cheerio = require('cheerio');
 const nedb = require('nedb');
