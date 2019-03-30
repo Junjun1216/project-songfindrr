@@ -32,11 +32,11 @@ if (process.env.NODE_ENV === 'production') {
 // crossSource search given a query and returns a list of songs
 app.post('/api/crossSearch/', async function (req, res, next) {
     console.log('New CrossSearch Staring: ' + req.body.query);
-    Promise.join(googleApi.customSearch(req.body.query), geniusScrape.geniusSearch(req.body.query), elastic.elasticSearch(req.body.query), async function(googleQuery, geniusQuery, elasticQuery){
+    Promise.join(googleApi.customSearch(req.body.query), elastic.elasticSearch(req.body.query), async function(googleQuery, elasticQuery){
         console.log('Done');
-        let newResult = mergeSources(geniusQuery, googleQuery);
-        let allResult = mergeSources(newResult, elasticQuery);
-        console.log(newResult.length + ' new results');
+        //let newResult = mergeSources(geniusQuery, googleQuery);
+        let allResult = mergeSources(googleQuery, elasticQuery);
+        //console.log(newResult.length + ' new results');
         console.log(elasticQuery.length + ' db results');
         console.log(allResult.length + ' unique results');
         if (!allResult[0]) return res.status(404).end('No results found');
@@ -49,7 +49,7 @@ app.post('/api/crossSearch/', async function (req, res, next) {
             maxAge: 60 * 30
         }));
         res.json(allResult);
-        if (newResult[0]) {
+/*        if (newResult[0]) {
             for (let i = 0; i < newResult.length; i++) {
                 if (await elastic.checkExistence(newResult[i])) {
                     newResult.splice(i, 1);
@@ -69,7 +69,7 @@ app.post('/api/crossSearch/', async function (req, res, next) {
                     }
                 }
             });
-        }
+        }*/
     });
 });
 
