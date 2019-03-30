@@ -1,3 +1,4 @@
+// unstructured test file
 let googleApi = require('./lib/googleApi');
 let geniusApi = require('./lib/geniusScrape');
 let elasticDb = require('./lib/elastic');
@@ -88,7 +89,7 @@ async function elastic() {
 
 }
 
-elastic();
+// elastic();
 
 let x = [ { author: 'Drake',
     cleanAuthor: 'DRAKE',

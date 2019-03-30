@@ -4,6 +4,21 @@ let geniusScrape = module.exports = {};
 const path = require('path');
 const Nightmare = require('nightmare');
 
+/*  ******* Data types *******
+    song objects must have at least the following attributes:
+        - (String) title (display title of song)
+        - (String) cleanTitle (standard formatted title of song for compare, check source rejex)
+        - (String) author (display author of song)
+        - (String) cleanAuthor (standard formatted author of song for compare, check source rejex)
+        - (String) link (link of song to scrape for lyrics)
+        - (string) source (source of obtained song)
+
+****************************** */
+/**
+ * Performs nightmare scrape on nightmare to fetch lyrics of a song
+ * @param {string} song link
+ * @returns {Promise<string>} returns lyrics if found, false otherwise
+ */
 geniusScrape.getLyrics = async function(link) {
     let nightmare = Nightmare({
         waitTimeout: 3000, // in ms
@@ -35,6 +50,12 @@ geniusScrape.getLyrics = async function(link) {
     }
 };
 
+
+/**
+ * Perform nightmare scrape on genius search with query
+ * @param {string} query is the lyrics wish to be searched
+ * @returns {Promise<[objects]>} returns a list of song objects, [false] otherwise
+ */
 geniusScrape.geniusSearch = async function(query) {
     let encodedQuery = encodeURIComponent(query);
     let nightmare = Nightmare({

@@ -6,6 +6,22 @@ const url = 'https://www.googleapis.com/customsearch/v1/siterestrict?';
 const apiKey = 'AIzaSyBwzcTxXjfbAMZGpXiyT7OiKx9_oKSaF-s';
 const engineId = '014928307931634836673:fw2xtr7plgi';
 
+/*  ******* Data types *******
+    song objects must have at least the following attributes:
+        - (String) title (display title of song)
+        - (String) cleanTitle (standard formatted title of song for compare, check source rejex)
+        - (String) author (display author of song)
+        - (String) cleanAuthor (standard formatted author of song for compare, check source rejex)
+        - (String) link (link of song to scrape for lyrics)
+        - (string) source (source of obtained song)
+
+****************************** */
+
+/**
+ * Perform google custom search with query
+ * @param {string} query is the lyrics wish to be searched
+ * @returns {Promise<[objects]>} returns a list of song objects, [false] otherwise
+ */
 googleApi.customSearch = async function(query) {
     let count = 0;
     let encodedQuery = encodeURIComponent(query);

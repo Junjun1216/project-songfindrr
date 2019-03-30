@@ -6,7 +6,7 @@ const Client = new elasticsearch.Client({
     host: 'localhost:9200'
 });
 
-// ping the client
+// ping the client on startup
 Client.ping({
     requestTimeout: 10000}, function(err) {
     if (err) {
@@ -17,6 +17,22 @@ Client.ping({
     }
 });
 
+/*  ******* Data types *******
+    song objects must have at least the following attributes:
+        - (String) title (display title of song)
+        - (String) cleanTitle (standard formatted title of song for compare, check source rejex)
+        - (String) author (display author of song)
+        - (String) cleanAuthor (standard formatted author of song for compare, check source rejex)
+        - (String) link (link of song to scrape for lyrics)
+        - (string) source (source of obtained song)
+
+****************************** */
+
+/**
+ * Checks the existence of a song in elastic database
+ * @param {object} song object containing at least the cleanAuthor and cleanTitle attributes
+ * @returns {Promise<boolean>} true if exists, false otherwise
+ */
 elastic.checkExistence = async function (song) {
     try {
         let result = await Client.search({
@@ -45,6 +61,11 @@ elastic.checkExistence = async function (song) {
     }
 };
 
+/**
+ * Checks the existence of a song in elastic database
+ * @param {object} song object
+ * @returns {Promise<boolean>} true if exists, false otherwise
+ */
 elastic.addSong = async function(song) {
     try {
         let result = await Client.search({
@@ -91,6 +112,12 @@ elastic.addSong = async function(song) {
     }
 };
 
+/**
+ * Get the lyrics of a song from the database
+ * @param {string} cleanAuthor
+ * @param {string} cleanTitle
+ * @returns {Promise<string>} return lyrics if found, false otherwise
+ */
 elastic.getLyric = async function(cleanAuthor, cleanTitle) {
     try {
         let result = await Client.search({
@@ -121,11 +148,16 @@ elastic.getLyric = async function(cleanAuthor, cleanTitle) {
         }
     } catch (error) {
         console.log('Failed To Get Lyric: ' + cleanTitle + ' ' + error);
+        return false;
     }
 };
 
+/**
+ * Perform ElasticSearch with query
+ * @param {string} query is the lyrics wish to be searched
+ * @returns {Promise<[objects]>} returns a list of song objects, [false] otherwise
+ */
 elastic.elasticSearch = async function(query) {
-    console.log ('Searching Elastic For : ' + query);
     try {
         let result = await Client.search({
             index: 'songs',
