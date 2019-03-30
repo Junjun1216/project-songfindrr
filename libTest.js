@@ -80,17 +80,15 @@ let song1 = [{ title: 'React',
     source: 'google',
     lyrics: 'Just Blaze, yeah Burn Out'}];
 
-async function elastic(songs) {
-    // for (let index in songs) {
-    //     await elasticDb.addSong(songs[index]);
-    // }
+async function elastic() {
+    await elasticDb.addSong(song1);
     // let result = await elasticDb.elasticSearch('yeah');
-    let result = await elasticDb.getLyric({cleanAuthor: 'ERICKSERMON', cleanTitle: 'REACT'});
-    console.log(result);
+    // let result = await elasticDb.getLyric({cleanAuthor: 'ERICKSERMON', cleanTitle: 'REACT'});
+    // console.log(result);
 
 }
 
-// elastic(song1);
+elastic();
 
 let x = [ { author: 'Drake',
     cleanAuthor: 'DRAKE',
