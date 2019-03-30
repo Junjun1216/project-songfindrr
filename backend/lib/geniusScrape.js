@@ -5,13 +5,15 @@ const path = require('path');
 const Nightmare = require('nightmare');
 
 geniusScrape.getLyrics = async function(link) {
+    let nightmare = Nightmare({
+        waitTimeout: 3000, // in ms
+        show: false,
+        // load custom preload file
+        webPreferences: {
+            preload: path.resolve(__dirname, 'custPreload.js')
+        }});
     try {
-        return new Nightmare({
-            show: false,
-            // load custom preload file
-            webPreferences: {
-                preload: path.resolve(__dirname, 'custPreload.js')
-            }})
+        return await nightmare
             .goto(link)
             .evaluate(() => {
                 let lyrics = $('p').eq(0).text().replace(/\[.*?\]/g, "");
@@ -35,16 +37,17 @@ geniusScrape.getLyrics = async function(link) {
 
 geniusScrape.geniusSearch = async function(query) {
     let encodedQuery = encodeURIComponent(query);
+    let nightmare = Nightmare({
+        waitTimeout: 30000, // in ms
+        show: false,
+        // load custom preload file
+        webPreferences: {
+            preload: path.resolve(__dirname, 'custPreload.js')
+        }});
     try {
-        return await new Nightmare({
-            waitTimeout: 3000, // in ms
-            show: false,
-            // load custom preload file
-            webPreferences: {
-                preload: path.resolve(__dirname, 'custPreload.js')
-            }})
+        return await nightmare
             .goto('https://genius.com/search?q=' + encodedQuery)
-            // .scrollTo(1500, 0)
+            .wait('.full_width_button')
             .evaluate(() => {
                 if ($('.full_width_button').eq(0).text().replace(/\[]/g, ' ').trim()
                     == 'Show more lyric matches') {
