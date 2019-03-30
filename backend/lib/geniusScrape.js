@@ -38,7 +38,7 @@ geniusScrape.getLyrics = async function(link) {
 geniusScrape.geniusSearch = async function(query) {
     let encodedQuery = encodeURIComponent(query);
     let nightmare = Nightmare({
-        waitTimeout: 30000, // in ms
+        waitTimeout: 3000, // in ms
         show: false,
         // load custom preload file
         webPreferences: {
