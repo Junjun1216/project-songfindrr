@@ -69,7 +69,7 @@ app.post('/api/crossSearch/', async function (req, res, next) {
 //get song info from elastic given its authors and titles
 app.get('/api/fetchLyrics/', async function(req, res, next) {
     let result = await elastic.getLyric(req.query.cleanAuthor, req.query.cleanTitle);
-    if (!result) return res.status(404).end('No Song Found With Query: ' + req.headers.cleantitle + '-' + req.headers.cleanauthor);
+    if (!result) return res.status(404).end('No Song Found With Query: ' + req.query.cleanTitle + '-' + req.query.cleanAuthor);
     return res.json(result);
 });
 
