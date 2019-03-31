@@ -10,8 +10,8 @@ app.use(bodyParser.json());
 app.use(cors());
 
 const cookie = require('cookie');
-
 const Promise = require('bluebird');
+const validator = require('validator');
 
 const googleApi = require('./lib/googleApi');
 const geniusScrape = require('./lib/geniusScrapePuppeteer');
@@ -28,11 +28,16 @@ if (process.env.NODE_ENV === 'production') {
     })
 }
 
+let sanitizeContent = (req, res, next) => {
+    req.body.content = validator.escape(req.body.query);
+    next();
+};
+
 // curl -X POST -H "Content-Type: application/json" -d '{"query":"react"}' http://localhost:3001/api/crossSearch/
 // crossSource search given a query and returns a list of songs
-app.post('/api/crossSearch/', async function (req, res, next) {
+app.post('/api/crossSearch/', sanitizeContent,  async (req, res, next) => {
     console.log('New CrossSearch Staring: ' + req.body.query);
-    Promise.join(googleApi.customSearch(req.body.query), geniusScrape.geniusSearch(req.body.query), elastic.elasticSearch(req.body.query), async function(googleQuery, geniusQuery, elasticQuery){
+    Promise.join(googleApi.customSearch(req.body.query), geniusScrape.geniusSearch(req.body.query), elastic.elasticSearch(req.body.query), async (googleQuery, geniusQuery, elasticQuery) => {
         console.log('Done');
         let newResult = mergeSources(geniusQuery, googleQuery);
         let allResult = mergeSources(newResult, elasticQuery);
@@ -51,32 +56,18 @@ app.post('/api/crossSearch/', async function (req, res, next) {
         }));
         res.json(allResult);
         if (newResult[0]) {
-            for (let i = 0; i < newResult.length; i++) {
-                if (await elastic.checkExistence(newResult[i])) {
-                    newResult.splice(i, 1);
-                    i--;
-                }
-            }
-            Promise.map(newResult, function (song) {
-                console.log('Scraping ' + song.title + ' by: ' + song.author);
-                return geniusScrape.getLyrics(song.link);
-            }, {concurrency: 3}).then(async function (lyrics) {
-                for (let index in lyrics) {
-                    if (lyrics[index] !== '' && lyrics[index]) {
-                        newResult[index]['lyrics'] = lyrics[index];
-                        await elastic.addSong(newResult[index]);
-                    } else {
-                        console.log('Lyrics Scrape Failed: ' + newResult[index].title);
-                    }
-                }
-            });
+            let resultGroup = [];
+            let size = 3;
+            while (newResult.length > 0) resultGroup.push(newResult.splice(0, size));
+            console.log(resultGroup);
+            for (let index in resultGroup) await processLyrics(resultGroup[index]);
         }
     });
 });
 
 // curl -X GET -H "Content-Type: application/json" -d '{"cleanAuthor": "DRAKE", "cleanTitle": "THELANGUAGE"}' http://localhost:3001/api/fetchLyrics/
 //get song info from elastic given its authors and titles
-app.post('/api/fetchLyrics/', async function(req, res, next) {
+app.post('/api/fetchLyrics/', async (req, res, next) => {
     let result = await elastic.getLyric(req.body.cleanAuthor, req.body.cleanTitle);
     if (!result) return res.status(404).end('No Song Found With Query: ' + req.query.cleanTitle + '-' + req.query.cleanAuthor);
     return res.json(result);
@@ -85,6 +76,46 @@ app.post('/api/fetchLyrics/', async function(req, res, next) {
 // -------------------------------------------------------------------------------------------------------------------//
 // util functions
 
+/**
+ * background process for fetching lyrics after crossSearch fetched authors and titles
+ * @param {list} newResult is a list of song objects
+ * @returns {Promise<int>} number of failed fetch instances
+ */
+async function processLyrics(newResult) {
+    if (newResult[0]) {
+        for (let i = 0; i < newResult.length; i++) {
+            if (await elastic.checkExistence(newResult[i])) {
+                newResult.splice(i, 1);
+                i--;
+            }
+        }
+        let failed = 0;
+        Promise.map(newResult, (song) => {
+            console.log('Scraping ' + song.title + ' by: ' + song.author);
+            return geniusScrape.getLyrics(song.link);
+        }, {concurrency: 20}).then(async (lyrics) => {
+            for (let index in lyrics) {
+                if (lyrics[index] !== '' && lyrics[index]) {
+                    newResult[index]['lyrics'] = lyrics[index];
+                    await elastic.addSong(newResult[index]);
+                } else {
+                    console.log('Lyrics Scrape Failed: ' + newResult[index].title);
+                    failed++;
+                }
+            }
+            console.log('Done Fetching Lyrics, With ' + failed + ' Fails Out Of ' + lyrics.length);
+            return failed;
+        });
+    }
+    return 0;
+}
+
+/**
+ * for comparing and merging different sources in crossSearch results
+ * @param {list} x
+ * @param {list} y
+ * @returns {list} list of song objects
+ */
 function mergeSources(x, y) {
     if (x[0] === false) return y;
     if (y[0] === false) return x;
@@ -122,7 +153,7 @@ function mergeSources(x, y) {
 const http = require('http');
 const PORT = process.env.PORT || 3001;
 
-http.createServer(app).listen(PORT, function (err) {
+http.createServer(app).listen(PORT, (err) => {
     if (err) console.log(err);
     else console.log("HTTP server on http://localhost:%s", PORT);
 });
