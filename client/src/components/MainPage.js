@@ -126,7 +126,14 @@ class MainPage extends Component {
         if (cookies.get("querySongs") !== undefined){
             try{
                 let cookiecontents = this.getCookie("querySongs");
-                cookiecontents = decodeURI(cookiecontents.replace(/%3A/g, ":").replace(/%2C/g, ",").replace(/\+/g, "").replace(/%26/g, "&").replace(/%2F/g, "/").replace(/%3F/g, "?"));
+                cookiecontents = decodeURI(cookiecontents
+                                .replace(/%3A/g, ":")
+                                .replace(/%2C/g, ",")
+                                .replace(/\+/g, "")
+                                .replace(/%26/g, "&")
+                                .replace(/%2F/g, "/")
+                                .replace(/%3F/g, "?")
+                                .replace(/%24/g, "$"));
                 cookiecontents = JSON.parse(cookiecontents);
                 if (cookiecontents == null){
                     this.setState({ results: '' });
@@ -197,11 +204,6 @@ class MainPage extends Component {
                                                     {row.author} - {row.title}
                                                 </Typography>
                                             </CardContent>
-                                            <div>
-                                                <IconButton aria-label="Play/pause">
-                                                    <PlayArrowIcon/>
-                                                </IconButton>
-                                            </div>
                                             <div>
                                                 <Button variant="outlined" color="primary" onClick={() => this.fetchLyrics(row.cleanAuthor, row.cleanTitle, row.author, row.title)}>
                                                     Show Lyrics

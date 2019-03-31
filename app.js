@@ -51,12 +51,13 @@ app.post('/api/crossSearch/', async function (req, res, next) {
         }));
         res.json(allResult);
         if (newResult[0]) {
-/*            for (let i = 0; i < newResult.length; i++) {
-                if (await elastic.checkExistence(newResult[i])) {
-                    newResult.splice(i, 1);
-                    i--;
-                }
-            }*/ newResult = newResult.splice(0,3);
+            // for (let i = 0; i < newResult.length; i++) {
+            //     if (await elastic.checkExistence(newResult[i])) {
+            //         newResult.splice(i, 1);
+            //         i--;
+            //     }
+            // }
+            // newResult = newResult.splice(0,3);
             Promise.map(newResult, function (song) {
                 console.log('Scraping ' + song.title + ' by: ' + song.author);
                 return geniusScrape.getLyrics(song.link);
@@ -77,7 +78,6 @@ app.post('/api/crossSearch/', async function (req, res, next) {
 // curl -X GET -H "Content-Type: application/json" -d '{"cleanAuthor": "DRAKE", "cleanTitle": "THELANGUAGE"}' http://localhost:3001/api/fetchLyrics/
 //get song info from elastic given its authors and titles
 app.post('/api/fetchLyrics/', async function(req, res, next) {
-    console.log(req.body);
     let result = await elastic.getLyric(req.body.cleanAuthor, req.body.cleanTitle);
     if (!result) return res.status(404).end('No Song Found With Query: ' + req.query.cleanTitle + '-' + req.query.cleanAuthor);
     return res.json(result);
