@@ -33,12 +33,12 @@ app.post('/api/crossSearch/', async function (req, res, next) {
         if (!allResult[0]) return res.status(404).end('No results found');
         let queriedSongs = [req.body.query];
         for (let i in allResult) queriedSongs.push({cleanAuthor: allResult[i].cleanAuthor, cleanTitle:allResult[i].cleanTitle});
-        res.setHeader('Set-Cookie', cookie.serialize('querySongs', queriedSongs, {
-            SameSite: true,
-            Secure: true,
-            path : '/',
-            maxAge: 60 * 30
-        }));
+        // res.setHeader('Set-Cookie', cookie.serialize('querySongs', queriedSongs, {
+            // SameSite: true,
+            // Secure: true,
+            // path : '/',
+            // maxAge: 60 * 30
+        // }));
         res.json(allResult);
         if (newResult[0]) {
             for (let i = 0; i < newResult.length; i++) {
@@ -67,7 +67,7 @@ app.post('/api/crossSearch/', async function (req, res, next) {
 // curl -X GET -H "Content-Type: application/json" -d '{"cleanAuthor": "DRAKE", "cleanTitle": "THELANGUAGE"}' http://localhost:3001/api/getLyrics/
 //get song info from elastic given its authors and titles
 app.get('/api/fetchLyrics/', async function(req, res, next) {
-    let result = await elastic.getLyric(req.headers.cleanauthor, req.headers.cleantitle);
+    let result = await elastic.getLyric(req.query.cleanAuthor, req.query.cleanTitle);
     if (!result) return res.status(404).end('No Song Found With Query: ' + req.headers.cleantitle + '-' + req.headers.cleanauthor);
     return res.json(result);
 });

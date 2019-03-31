@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
 import { Provider } from 'react-redux';
-import { createStore, applyMiddleware } from 'redux';
 import MainPage from './components/MainPage'
 import store from './store.js'
 

@@ -12,3 +12,9 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
+
+div#imgContainer {
+  min-width: 462.5;
+  min-height: 462.5;
+  display: inline-block;
+}
