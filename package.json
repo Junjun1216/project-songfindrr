@@ -26,10 +26,14 @@
     "nedb": "^1.8.0",
     "nightmare": "^2.10.0",
     "nodemon": "^1.18.10",
+    "puppeteer": "^1.14.0",
+    "redis": "^2.8.0",
     "request": "^2.88.0",
     "validator": "^10.11.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@types/bull": "^3.5.11"
+  },
   "directories": {
     "lib": "lib"
   },
