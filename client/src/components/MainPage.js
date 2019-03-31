@@ -19,7 +19,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Slide from '@material-ui/core/Slide';
 
-// import Cookies from 'js-cookie';
+// import Cookies from 'universal-cookie';
 import Cookies from 'universal-cookie';
 
 // API
@@ -37,17 +37,12 @@ class MainPage extends Component {
     constructor(props){
         super(props);
         this.state = {
-            floatLabelStyle: { fontSize: '19px' },
-            textFieldStyle: { width: '58%' },
-            searchBtnStyle: { marginTop: '19px' },
-            paperSize: { height: '30%', width: '30%' },
             lyric: '',
             results: [],
             open: false,
             fetchedLyrics: '',
             author: '',
             title: '',
-            querySongs: [],
         };
         this.search = this.search.bind(this);
         this.fetchLyrics = this.fetchLyrics.bind(this);
@@ -113,6 +108,7 @@ class MainPage extends Component {
 
         apiManager.get(fetch_lyrics, params).then((res) => {
             if(res){
+                console.log(res.data)
                 this.setState({ fetchedLyrics: res.data });
                 this.setState({ author: author });
                 this.setState({ title: title });
@@ -126,20 +122,21 @@ class MainPage extends Component {
     };
 
     componentDidMount(){
-        
-        try{
-            let cookiecontents = this.getCookie("querySongs");
-            cookiecontents = decodeURI(cookiecontents.replace(/%3A/g, ":").replace(/%2C/g, ",").replace(/\+/g, "").replace(/%26/g, "&").replace(/%2F/g, "/").replace(/%3F/g, "?"));
-            cookiecontents = JSON.parse(cookiecontents);
-            if (cookiecontents == null){
-                this.setState({ results: '' });
+        if (cookies.get("querySongs") !== undefined){
+            try{
+                let cookiecontents = this.getCookie("querySongs");
+                cookiecontents = decodeURI(cookiecontents.replace(/%3A/g, ":").replace(/%2C/g, ",").replace(/\+/g, "").replace(/%26/g, "&").replace(/%2F/g, "/").replace(/%3F/g, "?"));
+                cookiecontents = JSON.parse(cookiecontents);
+                if (cookiecontents == null){
+                    this.setState({ results: '' });
+                }
+                else{
+                    this.setState({ results: cookiecontents });
+                }
             }
-            else{
-                this.setState({ results: cookiecontents });
+            catch(err){
+                console.log(err)
             }
-        }
-        catch(err){
-            console.log(err)
         }
     }
 
@@ -148,7 +145,7 @@ class MainPage extends Component {
             let myCookie = cookies.get('querySongs');
             if (myCookie != null){
                 cookies.remove('querySongs');
-                this.setState({ results: '' });
+                this.setState({ results: [] });
             }
 
         }
@@ -198,7 +195,7 @@ class MainPage extends Component {
                                                         {row.author} - {row.title}
                                                     </Typography>
                                                 </CardContent>
-                                                <div key={row.link+"4"}>
+                                                <div>
                                                     <Button variant="outlined" color="primary" onClick={() => this.fetchLyrics(row.cleanAuthor, row.cleanTitle, row.author, row.title)}>
                                                         Show Lyrics
                                                     </Button>

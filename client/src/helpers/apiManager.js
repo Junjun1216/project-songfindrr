@@ -5,6 +5,7 @@ export const get = (endpoint, params) => {
     
     return new Promise(function(resolve, reject){
 
+        console.log(endpoint);
         axios.get(endpoint, { params: { 'Content-Type': 'application/json', 'cleanAuthor': params.cleanAuthor, 'cleanTitle': params.cleanTitle}})
             .then((response) => {
                 resolve(response);     
