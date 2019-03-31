@@ -126,19 +126,20 @@ class MainPage extends Component {
     };
 
     componentDidMount(){
-        if (cookies.get("querySongs") !== undefined) {
-            try {
-                let cookiecontents = this.getCookie("querySongs");
-                cookiecontents = decodeURI(cookiecontents.replace(/%3A/g, ":").replace(/%2C/g, ",").replace(/\+/g, "").replace(/%26/g, "&").replace(/%2F/g, "/").replace(/%3F/g, "?"));
-                cookiecontents = JSON.parse(cookiecontents);
-                if (cookiecontents == null) {
-                    this.setState({results: ''});
-                } else {
-                    this.setState({results: cookiecontents});
-                }
-            } catch (err) {
-                console.log(err)
+        
+        try{
+            let cookiecontents = this.getCookie("querySongs");
+            cookiecontents = decodeURI(cookiecontents.replace(/%3A/g, ":").replace(/%2C/g, ",").replace(/\+/g, "").replace(/%26/g, "&").replace(/%2F/g, "/").replace(/%3F/g, "?"));
+            cookiecontents = JSON.parse(cookiecontents);
+            if (cookiecontents == null){
+                this.setState({ results: '' });
             }
+            else{
+                this.setState({ results: cookiecontents });
+            }
+        }
+        catch(err){
+            console.log(err)
         }
     }
 
