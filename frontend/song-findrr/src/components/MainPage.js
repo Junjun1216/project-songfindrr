@@ -87,14 +87,23 @@ class MainPage extends Component {
             if(res){
                 this.setState({ results: res.data });
                 logoSpin[0].style.animation = "none";
-                cookies.set('queriedSongs', res.data, { SameSite: true, Secure: true, path : '/', maxAge: 60 * 30 });
-
             }
 
         }).catch((err) => {
             console.log(err);
         });
 
+    }
+
+    getCookie(name){
+        let nameEQ = name + "=";
+        let q = document.cookie.split(';');
+        for (var i = 0; i < q.length; i++) {
+            var c = q[i];
+            while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+            if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+        }
+        return null;
     }
 
     fetchLyrics(cleanAuthor, cleanTitle, author, title){
@@ -119,20 +128,32 @@ class MainPage extends Component {
     };
 
     componentDidMount(){
-        let myCookie = cookies.get('queriedSongs');
-        if (myCookie == null){
-            this.setState({ results: '' });
+        
+        try{
+            let cookiecontents = this.getCookie("querySongs");
+            cookiecontents = decodeURI(cookiecontents.replace(/%3A/g, ":").replace(/%2C/g, ",").replace(/\+/g, "").replace(/%26/g, "&"));
+            cookiecontents = JSON.parse(cookiecontents);
+            if (cookiecontents == null){
+                this.setState({ results: '' });
+            }
+            else{
+                let reloadResults = []
+                for (var i = 1; i < cookiecontents.length; i ++){
+                    reloadResults.push(cookiecontents[i])
+                }
+                this.setState({ results: reloadResults });
+            }
         }
-        else{
-            this.setState({ results: myCookie });
+        catch(err){
+            console.log(err)
         }
     }
 
     homePage(){
         try{
-            let myCookie = cookies.get('queriedSongs');
+            let myCookie = cookies.get('querySongs');
             if (myCookie != null){
-                cookies.remove('queriedSongs');
+                cookies.remove('querySongs');
                 this.setState({ results: '' });
             }
 
