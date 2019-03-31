@@ -31,7 +31,7 @@ app.post('/api/crossSearch/', async function (req, res, next) {
         console.log(elasticQuery.length + ' db results');
         console.log(allResult.length + ' unique results');
         if (!allResult[0]) return res.status(404).end('No results found');
-        let queriedSongs = [req.body.query];
+        let queriedSongs = [];
         for (let i in allResult) queriedSongs.push({author: allResult[i].author, title: allResult[i].title, cleanAuthor: allResult[i].cleanAuthor, cleanTitle: allResult[i].cleanTitle});
         queriedSongs = JSON.stringify(queriedSongs);
         res.setHeader('Set-Cookie', cookie.serialize('querySongs', queriedSongs, {

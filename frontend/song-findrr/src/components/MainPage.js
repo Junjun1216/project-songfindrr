@@ -137,11 +137,7 @@ class MainPage extends Component {
                 this.setState({ results: '' });
             }
             else{
-                let reloadResults = []
-                for (var i = 1; i < cookiecontents.length; i ++){
-                    reloadResults.push(cookiecontents[i])
-                }
-                this.setState({ results: reloadResults });
+                this.setState({ results: cookiecontents });
             }
         }
         catch(err){
