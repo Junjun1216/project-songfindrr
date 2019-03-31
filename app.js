@@ -83,7 +83,7 @@ app.get('/api/fetchLyrics/', async function(req, res, next) {
     console.log(req.query.cleanTitle);
     let result = await elastic.getLyric(req.query.cleanAuthor, req.query.cleanTitle);
     if (!result) return res.status(404).end('No Song Found With Query: ' + req.query.cleanTitle + '-' + req.query.cleanAuthor);
-    return res.json(result);
+    return res.json(false);
 });
 
 // -------------------------------------------------------------------------------------------------------------------//
