@@ -2,7 +2,16 @@
 let googleApi = require('./lib/googleApi');
 let geniusApi = require('./lib/geniusScrape');
 let elasticDb = require('./lib/elastic');
+let geniusscrape2 = require('./lib/geniusScrapePuppeteer');
 let Promise = require('bluebird');
+
+async function puppet() {
+    let result = await geniusscrape2.geniusSearch('react');
+    console.log(result);
+    let lyrics = await geniusscrape2.getLyrics('https://genius.com/Drake-the-language-lyrics');
+    console.log(lyrics);
+}
+// puppet();
 
 async function bluebirdjoin() {
     Promise.join(googleApi.customSearch('react'), geniusApi.geniusSearch('react'), function(googleQuery, geniusQuery) {

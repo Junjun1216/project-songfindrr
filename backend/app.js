@@ -13,7 +13,7 @@ const cookie = require('cookie');
 const Promise = require('bluebird');
 
 const googleApi = require('./lib/googleApi');
-const geniusScrape = require('./lib/geniusScrape');
+const geniusScrape = require('./lib/geniusScrapePuppeteer');
 const elastic = require('./lib/elastic');
 
 // -------------------------------------------------------------------------------------------------------------------//
