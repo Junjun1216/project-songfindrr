@@ -50,12 +50,12 @@ app.post('/api/crossSearch/', async function (req, res, next) {
         }));
         res.json(allResult);
         if (newResult[0]) {
-            for (let i = 0; i < newResult.length; i++) {
+/*            for (let i = 0; i < newResult.length; i++) {
                 if (await elastic.checkExistence(newResult[i])) {
                     newResult.splice(i, 1);
                     i--;
                 }
-            }
+            }*/ newResult = newResult.splice(0,3);
             Promise.map(newResult, function (song) {
                 console.log('Scraping ' + song.title + ' by: ' + song.author);
                 return geniusScrape.getLyrics(song.link);
