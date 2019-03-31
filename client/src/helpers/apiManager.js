@@ -50,3 +50,26 @@ export const searchApi = (endpoint, params) => {
     });        
 }
 
+export const fetchApi = (endpoint, params) => {
+    
+    return new Promise(function(resolve, reject){
+
+        let headers = null;
+        headers = {
+            headers: {
+                'Content-Type': 'application/json',
+                'cleanAuthor': params.cleanAuthor,
+                'cleanTitle': params.cleanTitle
+            }
+        };
+                        
+        axios.post(endpoint, params, headers)
+            .then((response) => {
+                resolve(response);     
+            })
+            .catch((error) => {
+                reject(error); 
+            })   
+    });        
+}
+

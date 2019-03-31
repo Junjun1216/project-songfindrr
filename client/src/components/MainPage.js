@@ -25,7 +25,7 @@ import Slide from '@material-ui/core/Slide';
 import Cookies from 'universal-cookie';
 
 // API
-import { cross_search, fetch_lyrics } from "../utilities/apiUrl";
+import { cross_search, fetch_lyrics, } from "../utilities/apiUrl";
 import * as apiManager from  '../helpers/apiManager';
 
 const cookies = new Cookies();
@@ -108,7 +108,7 @@ class MainPage extends Component {
             cleanTitle: cleanTitle,
         };
 
-        apiManager.get(fetch_lyrics, params).then((res) => {
+        apiManager.fetchApi(fetch_lyrics, params).then((res) => {
             if(res){
                 this.setState({ fetchedLyrics: res.data });
                 this.setState({ author: author });
