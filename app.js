@@ -75,14 +75,10 @@ app.post('/api/crossSearch/', async function (req, res, next) {
     });
 });
 
-// curl -X GET -H "Content-Type: application/json" -d '{"cleanAuthor": "DRAKE", "cleanTitle": "THELANGUAGE"}' http://localhost:3001/api/getLyrics/
+// curl -X GET -H "Content-Type: application/json" -d '{"cleanAuthor": "DRAKE", "cleanTitle": "THELANGUAGE"}' http://localhost:3001/api/fetchLyrics/
 //get song info from elastic given its authors and titles
 app.get('/api/fetchLyrics/', async function(req, res, next) {
-    console.log(req);
-    console.log(req.path);
-    console.log(req.query.cleanAuthor);
-    console.log(req.query.cleanTitle);
-    let result = await elastic.getLyric(req.query.cleanAuthor, req.query.cleanTitle);
+    let result = await elastic.getLyric(req.body.cleanAuthor, req.body.cleanTitle);
     if (!result) return res.status(404).end('No Song Found With Query: ' + req.query.cleanTitle + '-' + req.query.cleanAuthor);
     return res.json(false);
 });

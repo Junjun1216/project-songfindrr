@@ -108,7 +108,6 @@ class MainPage extends Component {
 
         apiManager.get(fetch_lyrics, params).then((res) => {
             if(res){
-                console.log(res.data)
                 this.setState({ fetchedLyrics: res.data });
                 this.setState({ author: author });
                 this.setState({ title: title });
