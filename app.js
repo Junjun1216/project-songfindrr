@@ -51,17 +51,16 @@ app.post('/api/crossSearch/', async function (req, res, next) {
         }));
         res.json(allResult);
         if (newResult[0]) {
-            // for (let i = 0; i < newResult.length; i++) {
-            //     if (await elastic.checkExistence(newResult[i])) {
-            //         newResult.splice(i, 1);
-            //         i--;
-            //     }
-            // }
-            // newResult = newResult.splice(0,3);
+            for (let i = 0; i < newResult.length; i++) {
+                if (await elastic.checkExistence(newResult[i])) {
+                    newResult.splice(i, 1);
+                    i--;
+                }
+            }
             Promise.map(newResult, function (song) {
                 console.log('Scraping ' + song.title + ' by: ' + song.author);
                 return geniusScrape.getLyrics(song.link);
-            }, {concurrency: 20}).then(async function (lyrics) {
+            }, {concurrency: 3}).then(async function (lyrics) {
                 for (let index in lyrics) {
                     if (lyrics[index] !== '' && lyrics[index]) {
                         newResult[index]['lyrics'] = lyrics[index];
