@@ -56,7 +56,8 @@ app.post('/api/crossSearch/', async function (req, res, next) {
                     newResult.splice(i, 1);
                     i--;
                 }
-            }*/ newResult = newResult.splice(0,3);
+            }*/
+            newResult = newResult.splice(0,3);
             Promise.map(newResult, function (song) {
                 console.log('Scraping ' + song.title + ' by: ' + song.author);
                 return geniusScrape.getLyrics(song.link);
