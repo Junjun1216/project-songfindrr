@@ -66,8 +66,8 @@ app.post('/api/crossSearch/', sanitizeContent,  async (req, res, next) => {
 
 // curl -X GET -H "Content-Type: application/json" -d '{"cleanAuthor": "DRAKE", "cleanTitle": "THELANGUAGE"}' http://localhost:3001/api/fetchLyrics/
 //get song info from elastic given its authors and titles
-app.post('/api/fetchLyrics/', async (req, res, next) => {
-    let result = await elastic.getLyric(req.body.cleanAuthor, req.body.cleanTitle);
+app.get('/api/fetchLyrics/', async (req, res, next) => {
+    let result = await elastic.getLyric(req.query.cleanAuthor, req.query.cleanTitle);
     if (!result) return res.status(404).end('No Song Found With Query: ' + req.query.cleanTitle + '-' + req.query.cleanAuthor);
     return res.json(result);
 });
