@@ -1,1 +1,0 @@
-import { FETCH_LYRICS } from './types';
