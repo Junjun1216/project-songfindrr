@@ -54,6 +54,10 @@ Done Fetching Lyrics, With 0 Fails Out Of 0
 - Using Puppeteer for live webscraping
 - GoogleApi as one of the cross source
 - ElasticSearch database
+- Bluebird for concurrency
+- Axios to link front to back
+- Speech Recognition
+- Request js to send request to googleApi
 ---
 
 ## Technical Challenges
