@@ -7,6 +7,7 @@ import logo from '../assets/logo_transparent.png';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import IconButton from '@material-ui/core/IconButton';
+import MicIcon from '@material-ui/icons/Mic';
 import Typography from '@material-ui/core/Typography';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 
@@ -17,18 +18,24 @@ import ListSubheader from '@material-ui/core/ListSubheader';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Slide from '@material-ui/core/Slide';
 
 // import Cookies from 'universal-cookie';
 import Cookies from 'universal-cookie';
 
+import SpeechRecognition from 'react-speech-recognition'
+
 // API
 import { cross_search, fetch_lyrics, } from "../utilities/apiUrl";
 import * as apiManager from  '../helpers/apiManager';
 
 const cookies = new Cookies();
+
+const options ={
+    autoStart: false,
+    continous: false
+};
 
 function Transition(props) {
     return <Slide direction="up" {...props} />;
@@ -45,14 +52,16 @@ class MainPage extends Component {
             fetchedLyrics: '',
             author: '',
             title: '',
+            color: "primary",
         };
         this.search = this.search.bind(this);
         this.fetchLyrics = this.fetchLyrics.bind(this);
         this.homePage = this.homePage.bind(this);
+        this.speechText = this.speechText.bind(this);
     }
 
     lyricChange = lyric => event => {
-        this.setState({ [lyric]: event.target.value, [this.state.lyricEr] : ''});
+        this.setState({ [lyric]: event.target.value });
     }
 
     handleClose = () => {
@@ -81,6 +90,7 @@ class MainPage extends Component {
         apiManager.searchApi(cross_search, params).then((res) => {
             if(res){
                 this.setState({ results: res.data });
+                console.log(this.state.results);
                 logoSpin[0].style.animation = "none";
             }
 
@@ -101,8 +111,12 @@ class MainPage extends Component {
         return null;
     }
 
-    fetchLyrics(cleanAuthor, cleanTitle, author, title){
+    fetchLyrics(cleanAuthor, cleanTitle, author, title, link){
 
+        console.log(cleanAuthor, cleanTitle, author, title, link);
+        this.setState({ fetchedLyrics: cleanAuthor });
+        console.log(this.state.fetchedLyrics);
+        console.log("hi");
         let params = { 
             cleanAuthor: cleanAuthor,
             cleanTitle: cleanTitle,
@@ -126,14 +140,7 @@ class MainPage extends Component {
         if (cookies.get("querySongs") !== undefined){
             try{
                 let cookiecontents = this.getCookie("querySongs");
-                cookiecontents = decodeURI(cookiecontents
-                                .replace(/%3A/g, ":")
-                                .replace(/%2C/g, ",")
-                                .replace(/\+/g, "")
-                                .replace(/%26/g, "&")
-                                .replace(/%2F/g, "/")
-                                .replace(/%3F/g, "?")
-                                .replace(/%24/g, "$"));
+                cookiecontents = decodeURI(cookiecontents.replace(/%3A/g, ":").replace(/%2C/g, ",").replace(/\+/g, "").replace(/%26/g, "&").replace(/%2F/g, "/").replace(/%3F/g, "?").replace(/%24/g, "$"));
                 cookiecontents = JSON.parse(cookiecontents);
                 if (cookiecontents == null){
                     this.setState({ results: '' });
@@ -162,12 +169,24 @@ class MainPage extends Component {
         }
 
     }
+
+    speechText(){
+        const { transcript, resetTranscript, startListening, stopListening, listening } = this.props
+        startListening();
+        this.setState({ color: "secondary" });
+        if (listening){
+            stopListening();
+            this.setState({ lyric: transcript})
+            this.setState({ color: "primary" });
+            resetTranscript();
+        }
+    }
     
     render() {
 
         return (
 
-            <div style={{ background: 'linear-gradient(30deg, #ffff99 30%, #FF8E53 90%)' }}>
+            <div style={{ height: '100%', background: 'linear-gradient(30deg, #ffff99 30%, #FF8E53 90%)' }}>
                 <MuiThemeProvider>
                     <div>
                         <div id="imgContainer" onClick={this.homePage}>
@@ -181,6 +200,11 @@ class MainPage extends Component {
                             onChange={this.lyricChange('lyric')}
                             margin="normal"
                         />
+                        <div>
+                            <IconButton color={this.state.color} onClick={this.speechText}>
+                                <MicIcon></MicIcon>
+                            </IconButton>
+                        </div>
                         <br/>
                         <Button variant="contained" color="primary" onClick={this.search}>
                             Findrr
@@ -196,8 +220,8 @@ class MainPage extends Component {
                                 <ListSubheader component="div"></ListSubheader>
                             </GridListTile>
                             {this.state.results && this.state.results.map(row => (
-                                <GridListTile key={row.link} style={{ height: '25vh', width: '33%', paddingRight: '10px', paddingLeft: '10px'}}>
-                                    <Card style={{ height: '19vh', backgroundColor: "#A7CDCC", borderRadius: "10px" }}>
+                                <GridListTile style={{ height: 'auto', width: '50%', paddingRight: '10px', paddingLeft: '10px', paddingBottom: '10px',}}>
+                                    <Card style={{ height: 'auto', width: 'auto', backgroundColor: "#A7CDCC", borderRadius: "10px" }}>
                                         <div>
                                             <CardContent>
                                                 <Typography component="h5" variant="h5">
@@ -205,7 +229,12 @@ class MainPage extends Component {
                                                 </Typography>
                                             </CardContent>
                                             <div>
-                                                <Button variant="outlined" color="primary" onClick={() => this.fetchLyrics(row.cleanAuthor, row.cleanTitle, row.author, row.title)}>
+                                                <IconButton aria-label="Play/pause">
+                                                    <PlayArrowIcon/>
+                                                </IconButton>
+                                            </div>
+                                            <div>
+                                                <Button variant="outlined" color="primary" onClick={() => this.fetchLyrics(row.cleanAuthor, row.cleanTitle, row.author, row.title, row.link)}>
                                                     Show Lyrics
                                                 </Button>
                                                 <Dialog
@@ -220,9 +249,9 @@ class MainPage extends Component {
                                                     {this.state.author} - {this.state.title}
                                                 </DialogTitle>
                                                 <DialogContent>
-                                                    <DialogContentText id="alert-dialog-slide-description">
+                                                    <Typography id="alert-dialog-slide-description" variant="body1">
                                                         {this.state.fetchedLyrics}
-                                                    </DialogContentText>
+                                                    </Typography>
                                                 </DialogContent>
                                                 <DialogActions>
                                                     <Button onClick={this.handleClose} color="primary">
@@ -244,4 +273,4 @@ class MainPage extends Component {
     }
 }
 
-export default MainPage;
+export default SpeechRecognition(options)(MainPage);
