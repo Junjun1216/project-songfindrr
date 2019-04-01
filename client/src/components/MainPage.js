@@ -52,6 +52,7 @@ class MainPage extends Component {
             author: '',
             title: '',
             color: "primary",
+            talk: false,
         };
         this.search = this.search.bind(this);
         this.fetchLyrics = this.fetchLyrics.bind(this);
@@ -166,17 +167,22 @@ class MainPage extends Component {
     }
 
     speechText(){
-        const { transcript, resetTranscript, startListening, stopListening, listening } = this.props
-        startListening();
-        this.setState({ color: "secondary" });
-        if (listening){
+        const { transcript, resetTranscript, startListening, stopListening } = this.props
+        if (this.state.talk === false){
+            startListening();
+            resetTranscript();
+            this.setState({ talk: true})
+            this.setState({ color: "secondary" });
+        }
+        else if (this.state.talk === true){
             stopListening();
             this.setState({ lyric: transcript})
             this.setState({ color: "primary" });
             resetTranscript();
+            this.setState({ talk: false})
         }
     }
-    
+
     render() {
 
         return (
