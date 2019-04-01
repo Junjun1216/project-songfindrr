@@ -7,7 +7,8 @@
 ---
 
 ## Website
-https://www.songfindrr.me/   (this link points to the link below)\s\s
+https://www.songfindrr.me/   (this link points to the link below)
+
 https://songfindrr.herokuapp.com/
 
 ## What Is Song Findrr?
