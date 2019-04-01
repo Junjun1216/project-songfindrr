@@ -189,7 +189,7 @@ class MainPage extends Component {
         return (
 
                 <MuiThemeProvider>
-                    <div style={{ height: '100%', background: 'linear-gradient(30deg, #ffff99 30%, #FF8E53 90%)' }}>
+                    <div style={{ height: '100%', background: 'linear-gradient(0deg, white 20%, #FF8E53 90%)' }}>
                     <div>
                         <div id="imgContainer" onClick={this.homePage}>
                             <img src={logo} className="App-logo" alt="logo"/>

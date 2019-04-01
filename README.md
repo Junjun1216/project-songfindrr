@@ -37,7 +37,8 @@ Aaron Watson - Kiss That Girl Goodbye
 - Complex Webcrawling/capturing data to database (queries user input to identify potential irrelevant/vague inputs)
 - Complex query of captured data (sort displayed results by relevance)
 - CrossSearch from different sources, compare and rate results to be displayed
-- Supports mobile and desktop platforms, compatible with other browsers
+- Compatible with other browsers and mobile
+- Voice speech to text search (only on chrome)
 - Error Handling (like the type mentioned above)
 - Security
 ---
