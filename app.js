@@ -10,7 +10,7 @@ app.use(bodyParser.json());
 app.use(cors());
 
 const cookie = require('cookie');
-const Promise = require('bluebird');
+const promise = require('bluebird');
 const validator = require('validator');
 
 const googleApi = require('./lib/googleApi');
@@ -37,7 +37,7 @@ let sanitizeContent = (req, res, next) => {
 // crossSource search given a query and returns a list of songs
 app.post('/api/crossSearch/', sanitizeContent,  async (req, res, next) => {
     console.log('New CrossSearch Staring: ' + req.body.query);
-    Promise.join(googleApi.customSearch(req.body.query), geniusScrape.geniusSearch(req.body.query), elastic.elasticSearch(req.body.query), async (googleQuery, geniusQuery, elasticQuery) => {
+    promise.join(googleApi.customSearch(req.body.query), geniusScrape.geniusSearch(req.body.query), elastic.elasticSearch(req.body.query), async (googleQuery, geniusQuery, elasticQuery) => {
         console.log('Done');
         let newResult = mergeSources(geniusQuery, googleQuery);
         let allResult = mergeSources(newResult, elasticQuery);
@@ -78,7 +78,7 @@ app.post('/api/fetchLyrics/', async (req, res, next) => {
 /**
  * background process for fetching lyrics after crossSearch fetched authors and titles
  * @param {list} newResult is a list of song objects
- * @returns {Promise<int>} number of failed fetch instances
+ * @returns {promise<int>} number of failed fetch instances
  */
 async function processLyrics(newResult) {
     if (newResult[0]) {
@@ -89,7 +89,7 @@ async function processLyrics(newResult) {
             }
         }
         let failed = 0;
-        Promise.map(newResult, (song) => {
+        promise.map(newResult, (song) => {
             console.log('Scraping ' + song.title + ' by: ' + song.author);
             return geniusScrape.getLyrics(song.link);
         }, {concurrency: 20}).then(async (lyrics) => {
