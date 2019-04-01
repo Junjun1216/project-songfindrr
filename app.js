@@ -89,7 +89,7 @@ async function processLyrics(newResult) {
             }
         }
         let failed = 0;
-        promise.map(newResult, (song) => {
+        await promise.map(newResult, (song) => {
             console.log('Scraping ' + song.title + ' by: ' + song.author);
             return geniusScrape.getLyrics(song.link);
         }, {concurrency: 20}).then(async (lyrics) => {
