@@ -1,0 +1,46 @@
+{
+  "name": "song-findrr",
+  "version": "0.1.0",
+  "private": true,
+  "proxy": "http://localhost:3001",
+  "dependencies": {
+    "@material-ui/core": "^3.9.2",
+    "@material-ui/icons": "^3.0.2",
+    "axios": "^0.18.0",
+    "cookie": "^0.3.1",
+    "js-cookie": "^2.2.0",
+    "material-ui": "^0.20.2",
+    "material-ui-icons": "^1.0.0-beta.36",
+    "react": "^16.8.4",
+    "react-dom": "^16.8.4",
+    "react-native-css-gradient": "^0.3.1",
+    "react-native-linear-gradient": "^2.5.4",
+    "react-native-web-linear-gradient": "^1.0.5",
+    "react-redux": "^6.0.1",
+    "react-scripts": "2.1.8",
+    "react-speech-recognition": "^1.1.0",
+    "redux": "^4.0.1",
+    "redux-thunk": "^2.3.0",
+    "universal-cookie": "^3.1.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ],
+  "description": "This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).",
+  "main": "index.js",
+  "devDependencies": {},
+  "author": "",
+  "license": "ISC"
+}
