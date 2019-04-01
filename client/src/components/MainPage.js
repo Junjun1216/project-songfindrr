@@ -167,7 +167,7 @@ class MainPage extends Component {
     }
 
     speechText(){
-        const { transcript, resetTranscript, startListening, stopListening } = this.props
+        const { transcript, resetTranscript, startListening, stopListening, abortListening } = this.props
         if (this.state.talk === false){
             startListening();
             resetTranscript();
@@ -180,6 +180,7 @@ class MainPage extends Component {
             this.setState({ color: "primary" });
             resetTranscript();
             this.setState({ talk: false})
+            abortListening();
         }
     }
 
@@ -187,8 +188,8 @@ class MainPage extends Component {
 
         return (
 
-            <div style={{ height: '100%', background: 'linear-gradient(30deg, #ffff99 30%, #FF8E53 90%)' }}>
                 <MuiThemeProvider>
+                    <div style={{ height: '100%', background: 'linear-gradient(30deg, #ffff99 30%, #FF8E53 90%)' }}>
                     <div>
                         <div id="imgContainer" onClick={this.homePage}>
                             <img src={logo} className="App-logo" alt="logo"/>
@@ -262,8 +263,8 @@ class MainPage extends Component {
                             ))}
                         </GridList>
                     </div>
+                    </div>
                 </MuiThemeProvider>
-            </div>
             
         )
     }
