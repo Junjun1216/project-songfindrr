@@ -6,7 +6,8 @@
 - Daniel Chen
 ---
 
-## Link
+## Website
+https://www.songfindrr.me/   (this link points to the link below)
 https://songfindrr.herokuapp.com/
 
 ## What Is Song Findrr?
@@ -15,12 +16,15 @@ Song Findrr is a search engine where the user can either type or verbally input 
 **Basic example:**
 
 ```sh
-$ Input: "Out like a light"
-Travis Scott - Sicko Mode
-Ciara - Ride
-The Honeysticks - Out Like a Light
-DIIV - Out of Mind
-Aaron Watson - Kiss That Girl Goodbye
+$ Input: "react"
+New CrossSearch Staring: react
+Searching Elastic For : react
+Done
+10 new results
+5 db results
+13 unique results
+Done Fetching Lyrics, With 0 Fails Out Of 0
+Done Fetching Lyrics, With 0 Fails Out Of 0
 ...
 ```
 ---
