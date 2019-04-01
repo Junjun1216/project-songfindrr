@@ -118,7 +118,7 @@ class MainPage extends Component {
             cleanTitle: cleanTitle,
         };
 
-        apiManager.fetchApi(fetch_lyrics, params).then((res) => {
+        apiManager.get(fetch_lyrics, params).then((res) => {
             if(res){
                 this.setState({ fetchedLyrics: res.data });
                 this.setState({ author: author });
