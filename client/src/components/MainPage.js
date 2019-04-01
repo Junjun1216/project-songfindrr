@@ -188,83 +188,81 @@ class MainPage extends Component {
 
         return (
 
-                <MuiThemeProvider>
-                    <div style={{ height: '100%', background: 'linear-gradient(30deg, #ffff99 30%, #FF8E53 90%)' }}>
-                    <div>
-                        <div id="imgContainer" onClick={this.homePage}>
-                            <img src={logo} className="App-logo" alt="logo"/>
-                        </div>
-                        <br/>
-                        <TextField 
-                            id="standard-name"
-                            label="Lyric"
-                            value={this.state.lyric}
-                            onChange={this.lyricChange('lyric')}
-                            margin="normal"
-                        />
-                        <div>
-                            <IconButton color={this.state.color} onClick={this.speechText}>
-                                <MicIcon></MicIcon>
-                            </IconButton>
-                        </div>
-                        <br/>
-                        <Button variant="contained" color="primary" onClick={this.search}>
-                            Findrr
-                        </Button>
-                        <br/>
+            <MuiThemeProvider>
+                <div>
+                    <div id="imgContainer" onClick={this.homePage}>
+                        <img src={logo} className="App-logo" alt="logo"/>
                     </div>
-
                     <br/>
-
+                    <TextField 
+                        id="standard-name"
+                        label="Lyric"
+                        value={this.state.lyric}
+                            onChange={this.lyricChange('lyric')}
+                        margin="normal"
+                    />
                     <div>
-                        <GridList cellHeight={180}>
-                            <GridListTile key="Subheader" cols={2} style={{ height: 'auto' }}>
-                                <ListSubheader component="div"></ListSubheader>
-                            </GridListTile>
-                            {this.state.results && this.state.results.map(row => (
-                                <GridListTile style={{ height: 'auto', width: '50%', paddingRight: '10px', paddingLeft: '10px', paddingBottom: '10px',}}>
-                                    <Card style={{ height: 'auto', width: 'auto', backgroundColor: "#A7CDCC", borderRadius: "10px" }}>
+                        <IconButton color={this.state.color} onClick={this.speechText}>
+                            <MicIcon></MicIcon>
+                        </IconButton>
+                    </div>
+                    <br/>
+                    <Button variant="contained" color="primary" onClick={this.search}>
+                        Findrr
+                    </Button>
+                    <br/>
+                </div>
+
+                <br/>
+
+                <div>
+                    <GridList cellHeight={180}>
+                        <GridListTile key="Subheader" cols={2} style={{ height: 'auto' }}>
+                            <ListSubheader component="div"></ListSubheader>
+                        </GridListTile>
+                        {this.state.results && this.state.results.map(row => (
+                            <GridListTile style={{ height: 'auto', width: '50%', paddingRight: '10px', paddingLeft: '10px', paddingBottom: '10px',}}>
+                                <Card style={{ height: 'auto', width: 'auto', backgroundColor: "#A7CDCC", borderRadius: "10px" }}>
+                                    <div>
+                                        <CardContent>
+                                            <Typography component="h5" variant="h5">
+                                                {row.author} - {row.title}
+                                            </Typography>
+                                        </CardContent>
                                         <div>
-                                            <CardContent>
-                                                <Typography component="h5" variant="h5">
-                                                    {row.author} - {row.title}
+                                            <Button variant="outlined" color="primary" onClick={() => this.fetchLyrics(row.cleanAuthor, row.cleanTitle, row.author, row.title)}>
+                                                Show Lyrics
+                                            </Button>
+                                            <Dialog
+                                                open={this.state.open}
+                                                TransitionComponent={Transition}
+                                                keepMounted
+                                                onClose={this.handleClose}
+                                                aria-labelledby="alert-dialog-slide-title"
+                                                aria-describedby="alert-dialog-slide-description"
+                                            >
+                                            <DialogTitle id="alert-dialog-slide-title">
+                                                {this.state.author} - {this.state.title}
+                                            </DialogTitle>
+                                            <DialogContent>
+                                                <Typography id="alert-dialog-slide-description" variant="body1">
+                                                    {this.state.fetchedLyrics}
                                                 </Typography>
-                                            </CardContent>
-                                            <div>
-                                                <Button variant="outlined" color="primary" onClick={() => this.fetchLyrics(row.cleanAuthor, row.cleanTitle, row.author, row.title)}>
-                                                    Show Lyrics
+                                            </DialogContent>
+                                            <DialogActions>
+                                                <Button onClick={this.handleClose} color="primary">
+                                                Close
                                                 </Button>
-                                                <Dialog
-                                                    open={this.state.open}
-                                                    TransitionComponent={Transition}
-                                                    keepMounted
-                                                    onClose={this.handleClose}
-                                                    aria-labelledby="alert-dialog-slide-title"
-                                                    aria-describedby="alert-dialog-slide-description"
-                                                >
-                                                <DialogTitle id="alert-dialog-slide-title">
-                                                    {this.state.author} - {this.state.title}
-                                                </DialogTitle>
-                                                <DialogContent>
-                                                    <Typography id="alert-dialog-slide-description" variant="body1">
-                                                        {this.state.fetchedLyrics}
-                                                    </Typography>
-                                                </DialogContent>
-                                                <DialogActions>
-                                                    <Button onClick={this.handleClose} color="primary">
-                                                    Close
-                                                    </Button>
-                                                </DialogActions>
-                                                </Dialog>
-                                            </div>
+                                            </DialogActions>
+                                            </Dialog>
                                         </div>
-                                    </Card>
-                                </GridListTile>
-                            ))}
-                        </GridList>
-                    </div>
-                    </div>
-                </MuiThemeProvider>
+                                    </div>
+                                </Card>
+                            </GridListTile>
+                        ))}
+                    </GridList>
+                </div>
+            </MuiThemeProvider>
             
         )
     }
