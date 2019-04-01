@@ -59,7 +59,6 @@ app.post('/api/crossSearch/', sanitizeContent,  async (req, res, next) => {
             let resultGroup = [];
             let size = 3;
             while (newResult.length > 0) resultGroup.push(newResult.splice(0, size));
-            console.log(resultGroup);
             for (let index in resultGroup) await processLyrics(resultGroup[index]);
         }
     });
