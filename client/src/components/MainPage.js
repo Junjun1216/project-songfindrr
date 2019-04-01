@@ -89,7 +89,6 @@ class MainPage extends Component {
         apiManager.searchApi(cross_search, params).then((res) => {
             if(res){
                 this.setState({ results: res.data });
-                console.log(this.state.results);
                 logoSpin[0].style.animation = "none";
             }
 
@@ -110,12 +109,9 @@ class MainPage extends Component {
         return null;
     }
 
-    fetchLyrics(cleanAuthor, cleanTitle, author, title, link){
+    fetchLyrics(cleanAuthor, cleanTitle, author, title){
 
-        console.log(cleanAuthor, cleanTitle, author, title, link);
         this.setState({ fetchedLyrics: cleanAuthor });
-        console.log(this.state.fetchedLyrics);
-        console.log("hi");
         let params = { 
             cleanAuthor: cleanAuthor,
             cleanTitle: cleanTitle,
@@ -228,7 +224,7 @@ class MainPage extends Component {
                                                 </Typography>
                                             </CardContent>
                                             <div>
-                                                <Button variant="outlined" color="primary" onClick={() => this.fetchLyrics(row.cleanAuthor, row.cleanTitle, row.author, row.title, row.link)}>
+                                                <Button variant="outlined" color="primary" onClick={() => this.fetchLyrics(row.cleanAuthor, row.cleanTitle, row.author, row.title)}>
                                                     Show Lyrics
                                                 </Button>
                                                 <Dialog
