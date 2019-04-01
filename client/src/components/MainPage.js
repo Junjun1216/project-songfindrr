@@ -9,7 +9,6 @@ import CardContent from '@material-ui/core/CardContent';
 import IconButton from '@material-ui/core/IconButton';
 import MicIcon from '@material-ui/icons/Mic';
 import Typography from '@material-ui/core/Typography';
-import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 
 import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
@@ -228,11 +227,6 @@ class MainPage extends Component {
                                                     {row.author} - {row.title}
                                                 </Typography>
                                             </CardContent>
-                                            <div>
-                                                <IconButton aria-label="Play/pause">
-                                                    <PlayArrowIcon/>
-                                                </IconButton>
-                                            </div>
                                             <div>
                                                 <Button variant="outlined" color="primary" onClick={() => this.fetchLyrics(row.cleanAuthor, row.cleanTitle, row.author, row.title, row.link)}>
                                                     Show Lyrics
