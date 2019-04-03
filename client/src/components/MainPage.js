@@ -94,6 +94,7 @@ class MainPage extends Component {
             }
 
         }).catch((err) => {
+            logoSpin[0].style.animation = "none";
             console.log(err);
         });
 
