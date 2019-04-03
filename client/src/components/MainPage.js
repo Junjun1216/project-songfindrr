@@ -92,6 +92,9 @@ class MainPage extends Component {
                 this.setState({ results: res.data });
                 logoSpin[0].style.animation = "none";
             }
+            else{
+                logoSpin[0].style.animation = "none";
+            }
 
         }).catch((err) => {
             logoSpin[0].style.animation = "none";
