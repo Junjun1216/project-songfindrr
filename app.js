@@ -44,7 +44,7 @@ app.post('/api/crossSearch/', sanitizeContent,  async (req, res, next) => {
         console.log(newResult.length + ' new results');
         console.log(elasticQuery.length + ' db results');
         console.log(allResult.length + ' unique results');
-        if (!allResult[0]) return res.status(204).end('No results found');
+        if (!allResult[0]) return res.status(404).end('No results found');
         let queriedSongs = [];
         for (let i in allResult) queriedSongs.push({author: allResult[i].author, title: allResult[i].title, cleanAuthor: allResult[i].cleanAuthor, cleanTitle: allResult[i].cleanTitle});
         queriedSongs = JSON.stringify(queriedSongs);
@@ -68,7 +68,7 @@ app.post('/api/crossSearch/', sanitizeContent,  async (req, res, next) => {
 // get song info from elastic given its authors and titles
 app.get('/api/fetchLyrics/', async (req, res, next) => {
     let result = await elastic.getLyric(req.query.cleanAuthor, req.query.cleanTitle);
-    if (!result) return res.status(204).end('No Song Found With Query: ' + req.query.cleanTitle + '-' + req.query.cleanAuthor);
+    if (!result) return res.status(404).end('No Song Found With Query: ' + req.query.cleanTitle + '-' + req.query.cleanAuthor);
     return res.json(result);
 });
 

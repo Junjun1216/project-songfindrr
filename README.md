@@ -12,9 +12,11 @@ https://www.songfindrr.me/   (this link points to the link below)
 https://songfindrr.herokuapp.com/
 
 ## What Is Song Findrr?
-See the demo at: https://www.youtube.com/watch?v=vKWSeDDvsPc
-
 Song Findrr is a search engine where the user can either type or verbally input the line of a lyric of a song and the search engine will find all relevant song titles with that lyric
+
+Find the API documentation in doc\README:
+
+https://github.com/UTSCC09/project-songfindrr/tree/master/doc
 
 **Basic example:**
 
@@ -50,16 +52,13 @@ Done Fetching Lyrics, With 0 Fails Out Of 0
 - Security
 ---
 
-## Technology to be Used
+## Technology Used
 - React Framework for frontend
 - Node.JS for backend
 - Using Puppeteer for live webscraping
 - GoogleApi as one of the cross source
 - ElasticSearch database
-- Bluebird for concurrency
-- Axios to link front to back
-- Speech Recognition
-- Request js to send request to googleApi
+- Nightmare Js for live webscraping (not used in final product as it was replaced with Puppeteer)
 ---
 
 ## Technical Challenges

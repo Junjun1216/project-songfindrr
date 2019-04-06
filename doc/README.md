@@ -13,14 +13,14 @@
     - content-type: `application/json`
     - body: (list) list containing Song Objects
         Song Objects
-        - (string) title (display title of song)
-        - (string) cleanTitle (standard formatted title of song for compare, check source rejex)
-        - (string) author (display author of song)
-        - (string) cleanAuthor (standard formatted author of song for compare, check source rejex)
-        - (string) link (link of song to scrape for lyrics)
-        - (int) rating (the matched rating of the song)
-        - (string) source (source of obtained song)
-- response: 204
+        - title: (string) (display title of song)
+        - cleanTitle:(string) (standard formatted title of song for compare, check source rejex)
+        - author: (string) (display author of song)
+        - cleanAuthor: (string) (standard formatted author of song for compare, check source rejex)
+        - link: (string) (link of song to scrape for lyrics)
+        - rating: (int) (the matched rating of the song)
+        - source: (string) (source of obtained song)
+- response: 404
     - body: (string) No results found
 
 ``` 
@@ -33,13 +33,12 @@
     - content-type: `application/json`
     - query: (object)
         cleanTitle
-        - (string) the title of the song stripped of symbols, uppercase and no space
-        cleanAuthor
-        - (string) the author of the song stripped of symbols, uppercase and no space
+        - cleanTitle: (string) the title of the song stripped of symbols, uppercase and no space
+        - cleanAuthor: (string) the author of the song stripped of symbols, uppercase and no space
 - response: 200
     - content-type: `application/json`
     - body: (string) lyrics of song
-- response: 204
+- response: 404
     - body: 'No Song Found With Query: ' + cleanTitle + '-' + cleanAuthor
 ``` 
 // curl -X GET 'http://localhost:3001/api/fetchLyrics/?cleanAuthor=DRAKE&cleanTitle=THELANGUAGE'
